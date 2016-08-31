@@ -1,17 +1,20 @@
 package com.bridgefy.samples.chatify;
 
-import android.content.Context;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bridgefy.sdk.client.Bridgefy;
 import com.bridgefy.sdk.connectivity.controller.Session;
@@ -20,7 +23,6 @@ import com.bridgefy.sdk.connectivity.models.Device;
 import com.bridgefy.sdk.connectivity.network.ConnectionType;
 import com.bridgefy.sdk.messaging.entity.Message;
 import com.bridgefy.sdk.messaging.exception.MessageException;
-import com.bridgefy.sdk.messaging.listener.BroadcastMessageListener;
 import com.bridgefy.sdk.messaging.listener.MessageListener;
 
 import java.util.ArrayList;
@@ -43,18 +45,18 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
         setContentView(R.layout.activity_peers);
         ButterKnife.bind(this);
 
-        // initialize bridgefy
-        Bridgefy.initialize(getApplicationContext());
-        Bridgefy.start(null, this);
-    }
-
-    @Override
-    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
         // initialize the DevicesAdapter and the RecyclerView
         devicesRecyclerView.setAdapter(devicesAdapter);
         devicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        return super.onCreateView(parent, name, context, attrs);
+        // check that we have Location permissions
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            initializeBridgefy();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, 0);
+        }
     }
 
 
@@ -96,6 +98,26 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     @Override
     public void onMessageDelivered(Session session, Message message) {
         Log.v(TAG, "Message delivered to: " + session.getUuid() + ", content: " + new String(message.getContent()));
+    }
+
+
+    /**
+     *      OTHERSTUFF
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            initializeBridgefy();
+        } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+            Toast.makeText(this, "Location permissions needed to start devices discovery.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+    }
+
+    void initializeBridgefy() {
+        Bridgefy.initialize(getApplicationContext());
+        Bridgefy.start(this, this);
     }
 
     public class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {

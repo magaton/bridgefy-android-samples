@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bridgefy.samples.chatify">
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Application -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -11,10 +16,13 @@
         <activity android:name=".DevicesActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.bridgefy.sdk.API_KEY"
+            android:value="337A32BF-8554-4F76-9E48-B7FA4743F717" />
     </application>
 
 </manifest>
