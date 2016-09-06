@@ -46,6 +46,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
         ButterKnife.bind(this);
 
         // initialize the DevicesAdapter and the RecyclerView
+        devicesAdapter = new DevicesAdapter();
         devicesRecyclerView.setAdapter(devicesAdapter);
         devicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -123,6 +124,10 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     public class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {
         // the list that holds our incoming devices
         ArrayList<Device> devices;
+
+        public DevicesAdapter() {
+            devices = new ArrayList<Device>();
+        }
 
         @Override
         public int getItemCount() {
