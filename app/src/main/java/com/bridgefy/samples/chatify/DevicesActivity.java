@@ -42,7 +42,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_peers);
+        setContentView(R.layout.activity_devices);
         ButterKnife.bind(this);
 
         // initialize the DevicesAdapter and the RecyclerView
@@ -170,7 +170,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
         }
 
         void setDevice(Device device) {
-            deviceView.setText(device.getUuid());
+            deviceView.setText(device.getDeviceName());
         }
     }
 }
