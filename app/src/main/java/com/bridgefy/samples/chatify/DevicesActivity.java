@@ -143,8 +143,10 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
 
         void removeDevice(Device device) {
             int position = devices.indexOf(device);
-            devices.remove(position);
-            notifyItemRemoved(position);
+            if (position > -1) {
+                devices.remove(position);
+                notifyItemRemoved(position);
+            }
         }
 
         @Override
