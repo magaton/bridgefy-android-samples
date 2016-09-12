@@ -125,9 +125,15 @@ Bridgefy.start(bridgefyClient, messageListener,deviceListener);
 After the start method has been invoked, all discovered devices will be asynchronously received in your deviceListener in the onDeviceConnected method.  
 
 
+
+```
+#!java
+
 public void onDeviceConnected(Device device, ConnectionType deviceType) {
 ….
 }
+
+```
 
 **Send Messages**
 
