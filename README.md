@@ -1,12 +1,12 @@
-                                                                                                                                                                                                                                                                                                                      
-
-![image alt text](image_0.png)
 
 **Bridgefy**
 
+
 **Android SDK Documentation**
 
+
 Version 2.0
+
 
 September 2016
 
@@ -40,15 +40,33 @@ Follow these steps to enable the Bridgefy SDK for Android inside your app and ge
 
 3. Enter your app package details, for example:
 
+
+```
+#!python
+
 com.myapp.android.main
+```
+
 
 4. The resulting API Key will have a UUID format like this:
 
+
+```
+#!python
+
 xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+```
+
 
 ## **Add the Bridgefy SDK to your project**
 
-dependencies {    compile 'me.bridgefy.android:bridgefy-sdk:1.0.0'}
+
+```
+#!xml
+
+dependencies {
+    compile 'me.bridgefy.android:bridgefy-sdk:1.0.0'
+}
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 
@@ -60,7 +78,7 @@ dependencies {    compile 'me.bridgefy.android:bridgefy-sdk:1.0.0'}
 
             android:name="me.bridgefy.android.sdk.API_KEY"
 
-            android:value="YOUR_UUID" />
+            android:value="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
 
         <activity>
 
@@ -71,6 +89,8 @@ dependencies {    compile 'me.bridgefy.android:bridgefy-sdk:1.0.0'}
     </application>
 
 </manifest>
+
+```
 
 ## **Initialize Bridgefy**
 
@@ -254,5 +274,3 @@ Notify when a Device is lost</td>
     <td>Time to wait in milliseconds for before finalize connectivity for inactivity.</td>
   </tr>
 </table>
-
-
