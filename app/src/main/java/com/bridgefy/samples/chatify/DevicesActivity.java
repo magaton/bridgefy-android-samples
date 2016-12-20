@@ -17,15 +17,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bridgefy.sdk.client.Bridgefy;
-import com.bridgefy.sdk.connectivity.controller.Session;
-import com.bridgefy.sdk.connectivity.listeners.DeviceListener;
-import com.bridgefy.sdk.connectivity.models.Device;
-import com.bridgefy.sdk.connectivity.network.ConnectionType;
-import com.bridgefy.sdk.messaging.entity.Message;
-import com.bridgefy.sdk.messaging.exception.MessageException;
-import com.bridgefy.sdk.messaging.listener.MessageListener;
+import com.bridgefy.sdk.client.Device;
+import com.bridgefy.sdk.client.DeviceListener;
+import com.bridgefy.sdk.client.Message;
+import com.bridgefy.sdk.client.MessageListener;
+import com.bridgefy.sdk.framework.controller.Session;
+import com.bridgefy.sdk.framework.entities.ForwardPacket;
+import com.bridgefy.sdk.framework.exceptions.MessageException;
+import com.bridgefy.sdk.framework.network.ConnectionType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -61,15 +63,23 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
 
+
     /**
      *      BRIDGEFY LISTENERS
      */
+
     @Override
-    public void onDeviceFound(Device device, ConnectionType deviceType) {
-        Log.i(TAG, "Device found: " + device.getUuid());
+    public void onDeviceConnected(Device device, ConnectionType deviceType) {
+        Log.d(TAG, "Device connected: " + device.getUuid());
+
+        // crear el mensaje
+        HashMap<String, Object> name = new HashMap<>();
+        name.put("name", Build.MANUFACTURER + " " + Build.MODEL);
+        Message message = new Message(name, device.getUuid(),
+                Bridgefy.getInstance().getBridgefyClient().getUserUuid(), System.currentTimeMillis());
 
         // enviar mensaje al dispositivo encontrado
-        Bridgefy.sendMessage(device, Build.MANUFACTURER + " " + Build.MODEL);
+        Bridgefy.sendMessage(message);
     }
 
     @Override
@@ -80,10 +90,15 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
 
     @Override
     public void onMessageReceived(Session session, Message message) {
-        Log.d(TAG, "Message Received: " + session.getDevice().getUuid() + ", content: " + new String(message.getContent()));
+        Log.d(TAG, "Message Received, userId: " + session.getDevice().getUuid() + ", content: " + message.getContent().toString());
         Device device = session.getDevice();
-        device.setDeviceName(new String(message.getContent()));
+        device.setDeviceName((String) message.getContent().get("name"));
         devicesAdapter.addDevice(device);
+    }
+
+    @Override
+    public void onMessageSent(Session session, Message message) {
+        Log.d(TAG, "Message sent to userId: " + session.getUuid() + ", content: " + message.getContent().toString());
     }
 
     @Override
@@ -92,18 +107,18 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
     @Override
-    public void onMessageSent(Session session, Message message) {
-        Log.d(TAG, "Message sent to: " + session.getUuid() + ", content: " + new String(message.getContent()));
+    public void onMessageReceivedException(ForwardPacket forwardPacket, MessageException e) {
+        Log.e(TAG, "Message failed", e);
     }
 
     @Override
-    public void onMessageDelivered(Session session, Message message) {
-        Log.v(TAG, "Message delivered to: " + session.getUuid() + ", content: " + new String(message.getContent()));
+    public void onBroadcastMessageReceived(Message message) {
+        Log.d(TAG, "Broadcast Message Received: " + message.getContent().toString());
     }
 
 
     /**
-     *      OTHERSTUFF
+     *      OTHER STUFF
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
