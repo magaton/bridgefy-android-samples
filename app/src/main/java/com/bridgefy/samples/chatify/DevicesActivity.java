@@ -17,24 +17,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bridgefy.sdk.client.Bridgefy;
-import com.bridgefy.sdk.connectivity.controller.Session;
-import com.bridgefy.sdk.connectivity.listeners.DeviceListener;
-import com.bridgefy.sdk.connectivity.models.Device;
-import com.bridgefy.sdk.connectivity.network.ConnectionType;
-import com.bridgefy.sdk.messaging.entity.Message;
-import com.bridgefy.sdk.messaging.exception.MessageException;
-import com.bridgefy.sdk.messaging.listener.MessageListener;
+import com.bridgefy.sdk.client.Device;
+import com.bridgefy.sdk.client.DeviceListener;
+import com.bridgefy.sdk.client.Message;
+import com.bridgefy.sdk.client.MessageListener;
+import com.bridgefy.sdk.framework.controller.Session;
+import com.bridgefy.sdk.framework.entities.ForwardPacket;
+import com.bridgefy.sdk.framework.exceptions.MessageException;
+import com.bridgefy.sdk.framework.network.ConnectionType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 public class DevicesActivity extends AppCompatActivity implements DeviceListener, MessageListener {
 
     private final String TAG = "DevicesActivity";
 
-    @Bind(R.id.devices_recycler_view)
+    @BindView(R.id.devices_recycler_view)
     RecyclerView    devicesRecyclerView;
     DevicesAdapter  devicesAdapter;
 
@@ -61,29 +64,41 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
 
+    @Override
+    public void onDeviceConnected(Device device, ConnectionType connectionType) {
+        Log.i(TAG, "Device found: " + device.getUserId());
+
+        // enviar mensaje al dispositivo encontrado
+
+        HashMap<String, Object> data = new HashMap<>();
+
+        data.put("manufacturer ",Build.MANUFACTURER);
+        data.put("model", Build.MODEL);
+
+        //since this is a broadcast message, it's not necessary to specify a receiver
+        Message message = Bridgefy.createMessage(null, data);
+        Bridgefy.sendBroadcastMessage(message);
+    }
+
     /**
      *      BRIDGEFY LISTENERS
      */
-    @Override
-    public void onDeviceFound(Device device, ConnectionType deviceType) {
-        Log.i(TAG, "Device found: " + device.getUuid());
 
-        // enviar mensaje al dispositivo encontrado
-        Bridgefy.sendMessage(device, Build.MANUFACTURER + " " + Build.MODEL);
-    }
+
+
+
 
     @Override
     public void onDeviceLost(Device device, ConnectionType deviceType) {
-        Log.w(TAG, "Device lost: " + device.getUuid());
+        Log.w(TAG, "Device lost: " + device.getUserId());
         devicesAdapter.removeDevice(device);
     }
 
     @Override
     public void onMessageReceived(Session session, Message message) {
-        Log.d(TAG, "Message Received: " + session.getDevice().getUuid() + ", content: " + new String(message.getContent()));
-        Device device = session.getDevice();
-        device.setDeviceName(new String(message.getContent()));
-        devicesAdapter.addDevice(device);
+        String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
+        Log.d(TAG, "Message Received: " + session.getDevice().getUserId() + ", content: " + s);
+        devicesAdapter.addDevice(s);
     }
 
     @Override
@@ -92,14 +107,22 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
     @Override
-    public void onMessageSent(Session session, Message message) {
-        Log.d(TAG, "Message sent to: " + session.getUuid() + ", content: " + new String(message.getContent()));
+    public void onBroadcastMessageReceived(Message message) {
+        String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
+        Log.d(TAG, "Message Received: content: " + s);
+        devicesAdapter.addDevice(s);
     }
 
     @Override
-    public void onMessageDelivered(Session session, Message message) {
-        Log.v(TAG, "Message delivered to: " + session.getUuid() + ", content: " + new String(message.getContent()));
+    public void onMessageSent(Session session, Message message) {
+        Log.d(TAG, "Message sent to: " + session.getUuid() );
     }
+
+    @Override
+    public void onMessageReceivedException(ForwardPacket forwardPacket, MessageException e) {
+
+    }
+
 
 
     /**
@@ -117,16 +140,16 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
     void initializeBridgefy() {
-        Bridgefy.initialize(getApplicationContext());
+        Bridgefy.initialize(getApplicationContext(),"edaf72c4-570b-4cf4-8a0b-291c5aa77f4f");
         Bridgefy.start(this, this);
     }
 
     public class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {
         // the list that holds our incoming devices
-        ArrayList<Device> devices;
+        ArrayList<String> devices;
 
         public DevicesAdapter() {
-            devices = new ArrayList<Device>();
+            devices = new ArrayList<>();
         }
 
         @Override
@@ -134,7 +157,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
             return devices.size();
         }
 
-        void addDevice(Device device) {
+        void addDevice(String device) {
             if (!devices.contains(device)) {
                 devices.add(device);
                 notifyItemInserted(devices.size() - 1);
@@ -163,7 +186,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
     class DeviceViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.txt_device)
+        @BindView(R.id.txt_device)
         TextView deviceView;
 
         DeviceViewHolder(View view) {
@@ -171,8 +194,8 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
             ButterKnife.bind(this, view);
         }
 
-        void setDevice(Device device) {
-            deviceView.setText(device.getDeviceName());
+        void setDevice(String device) {
+            deviceView.setText(device);
         }
     }
 }

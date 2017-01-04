@@ -1,4 +1,1 @@
 include ':app'
-
-include ':bridgefy-sdk-android'
-project(':bridgefy-sdk-android').projectDir = new File('../bridgefy-sdk/bridgefy-sdk-android')
