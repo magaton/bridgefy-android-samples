@@ -29,14 +29,15 @@ import com.bridgefy.sdk.framework.network.ConnectionType;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 public class DevicesActivity extends AppCompatActivity implements DeviceListener, MessageListener {
 
     private final String TAG = "DevicesActivity";
 
-    @Bind(R.id.devices_recycler_view)
+    @BindView(R.id.devices_recycler_view)
     RecyclerView    devicesRecyclerView;
     DevicesAdapter  devicesAdapter;
 
@@ -62,43 +63,45 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
         }
     }
 
+    void initializeBridgefy() {
+        Bridgefy.initialize(getApplicationContext(),"edaf72c4-570b-4cf4-8a0b-291c5aa77f4f");
+        Bridgefy.start(this, this);
+    }
 
 
     /**
      *      BRIDGEFY LISTENERS
      */
-
     @Override
-    public void onDeviceConnected(Device device, ConnectionType deviceType) {
-        Log.d(TAG, "Device connected: " + device.getUuid());
-
-        // crear el mensaje
-        HashMap<String, Object> name = new HashMap<>();
-        name.put("name", Build.MANUFACTURER + " " + Build.MODEL);
-        Message message = new Message(name, device.getUuid(),
-                Bridgefy.getInstance().getBridgefyClient().getUserUuid(), System.currentTimeMillis());
+    public void onDeviceConnected(Device device, ConnectionType connectionType) {
+        Log.i(TAG, "Device found: " + device.getUserId());
 
         // enviar mensaje al dispositivo encontrado
-        Bridgefy.sendMessage(message);
+        HashMap<String, Object> data = new HashMap<>();
+
+        data.put("manufacturer ",Build.MANUFACTURER);
+        data.put("model", Build.MODEL);
+
+        //since this is a broadcast message, it's not necessary to specify a receiver
+        Message message = Bridgefy.createMessage(null, data);
+        Bridgefy.sendBroadcastMessage(message);
     }
 
     @Override
     public void onDeviceLost(Device device, ConnectionType deviceType) {
-        Log.w(TAG, "Device lost: " + device.getUuid());
+        Log.w(TAG, "Device lost: " + device.getUserId());
         devicesAdapter.removeDevice(device);
     }
 
     @Override
     public void onMessageReceived(Session session, Message message) {
-        Log.d(TAG, "Message Received, userId: " + session.getDevice().getUuid() + ", content: " + message.getContent().toString());
-        Device device = session.getDevice();
-        device.setDeviceName((String) message.getContent().get("name"));
-        devicesAdapter.addDevice(device);
-    }
-
-    @Override
-    public void onMessageSent(Session session, Message message) {
-        Log.d(TAG, "Message sent to userId: " + session.getUuid() + ", content: " + message.getContent().toString());
+//        Log.d(TAG, "Message Received, userId: " + session.getDevice().getUuid() + ", content: " + message.getContent().toString());
+//        Device device = session.getDevice();
+//        device.setDeviceName((String) message.getContent().get("name"));
+//        devicesAdapter.addDevice(device);
+        String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
+        Log.d(TAG, "Message Received: " + session.getDevice().getUserId() + ", content: " + s);
+        devicesAdapter.addDevice(s);
     }
 
     @Override
@@ -107,13 +110,20 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
     @Override
-    public void onMessageReceivedException(ForwardPacket forwardPacket, MessageException e) {
-        Log.e(TAG, "Message failed", e);
+    public void onBroadcastMessageReceived(Message message) {
+        String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
+        Log.d(TAG, "Message Received: content: " + s);
+        devicesAdapter.addDevice(s);
     }
 
     @Override
-    public void onBroadcastMessageReceived(Message message) {
-        Log.d(TAG, "Broadcast Message Received: " + message.getContent().toString());
+    public void onMessageSent(Session session, Message message) {
+        Log.d(TAG, "Message sent to: " + session.getUuid());
+    }
+
+    @Override
+    public void onMessageReceivedException(ForwardPacket forwardPacket, MessageException e) {
+        Log.e(TAG, e.getMessage());
     }
 
 
@@ -131,17 +141,12 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
         }
     }
 
-    void initializeBridgefy() {
-        Bridgefy.initialize(getApplicationContext());
-        Bridgefy.start(this, this);
-    }
-
     public class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {
         // the list that holds our incoming devices
-        ArrayList<Device> devices;
+        ArrayList<String> devices;
 
-        public DevicesAdapter() {
-            devices = new ArrayList<Device>();
+        DevicesAdapter() {
+            devices = new ArrayList<>();
         }
 
         @Override
@@ -149,7 +154,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
             return devices.size();
         }
 
-        void addDevice(Device device) {
+        void addDevice(String device) {
             if (!devices.contains(device)) {
                 devices.add(device);
                 notifyItemInserted(devices.size() - 1);
@@ -178,7 +183,7 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     }
 
     class DeviceViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.txt_device)
+        @BindView(R.id.txt_device)
         TextView deviceView;
 
         DeviceViewHolder(View view) {
@@ -186,8 +191,8 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
             ButterKnife.bind(this, view);
         }
 
-        void setDevice(Device device) {
-            deviceView.setText(device.getDeviceName());
+        void setDevice(String device) {
+            deviceView.setText(device);
         }
     }
 }

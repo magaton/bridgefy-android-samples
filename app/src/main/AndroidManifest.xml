@@ -19,10 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <meta-data
-            android:name="com.bridgefy.sdk.API_KEY"
-            android:value="edaf72c4-570b-4cf4-8a0b-291c5aa77f4f" />
     </application>
 
 </manifest>
