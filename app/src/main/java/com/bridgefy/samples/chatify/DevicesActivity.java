@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bridgefy.sdk.client.Bridgefy;
+import com.bridgefy.sdk.client.BridgefyClient;
 import com.bridgefy.sdk.client.Device;
 import com.bridgefy.sdk.client.DeviceListener;
 import com.bridgefy.sdk.client.Message;
@@ -33,7 +34,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class DevicesActivity extends AppCompatActivity implements DeviceListener, MessageListener {
+public class DevicesActivity extends AppCompatActivity implements
+        DeviceListener, MessageListener, Bridgefy.RegistrationListener {
 
     private final String TAG = "DevicesActivity";
 
@@ -63,14 +65,34 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
         }
     }
 
-    void initializeBridgefy() {
-        Bridgefy.initialize(getApplicationContext(),"edaf72c4-570b-4cf4-8a0b-291c5aa77f4f");
+
+    /**
+     *      BRIDGEFY REGISTRATION LISTENERS
+     */
+    @Override
+    public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
+        Log.i(TAG, "onRegistrationSuccessful: current userId is: " + bridgefyClient.getUserUuid());
+        Log.i(TAG, "Device Rating " + bridgefyClient.getDeviceProfile().getRating());
+        Log.i(TAG, "Device Evaluation " + bridgefyClient.getDeviceProfile().getDeviceEvaluation());
+
+        // Start the Bridgefy SDK
         Bridgefy.start(this, this);
+    }
+
+    @Override
+    public void onRegistrationFailed(int errorCode, String message) {
+        Log.e(TAG, "onRegistrationFailed: failed with ERROR_CODE: " + errorCode + ", MESSAGE: " + message);
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(DevicesActivity.this, "Bridgefy registration did not succeed.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
     /**
-     *      BRIDGEFY LISTENERS
+     *      BRIDGEFY WORKFLOW LISTENERS
      */
     @Override
     public void onDeviceConnected(Device device, ConnectionType connectionType) {
@@ -95,10 +117,6 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
 
     @Override
     public void onMessageReceived(Session session, Message message) {
-//        Log.d(TAG, "Message Received, userId: " + session.getDevice().getUuid() + ", content: " + message.getContent().toString());
-//        Device device = session.getDevice();
-//        device.setDeviceName((String) message.getContent().get("name"));
-//        devicesAdapter.addDevice(device);
         String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
         Log.d(TAG, "Message Received: " + session.getDevice().getUserId() + ", content: " + s);
         devicesAdapter.addDevice(s);
@@ -130,6 +148,10 @@ public class DevicesActivity extends AppCompatActivity implements DeviceListener
     /**
      *      OTHER STUFF
      */
+    private void initializeBridgefy() {
+        Bridgefy.initialize(getApplicationContext(), this);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
