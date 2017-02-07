@@ -97,22 +97,12 @@ public class DevicesActivity extends AppCompatActivity implements
     @Override
     public void onDeviceConnected(Device device, ConnectionType connectionType) {
         Log.i(TAG, "Device found: " + device.getUserId());
-
-        // enviar mensaje al dispositivo encontrado
-        HashMap<String, Object> data = new HashMap<>();
-
-        data.put("manufacturer ",Build.MANUFACTURER);
-        data.put("model", Build.MODEL);
-
-        //since this is a broadcast message, it's not necessary to specify a receiver
-        Message message = Bridgefy.createMessage(null, data);
-        Bridgefy.sendBroadcastMessage(message);
+        broadcastPresence();
     }
 
     @Override
     public void onDeviceLost(Device device, ConnectionType deviceType) {
         Log.w(TAG, "Device lost: " + device.getUserId());
-        devicesAdapter.removeDevice(device);
     }
 
     @Override
@@ -131,7 +121,9 @@ public class DevicesActivity extends AppCompatActivity implements
     public void onBroadcastMessageReceived(Message message) {
         String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
         Log.d(TAG, "Message Received: content: " + s);
-        devicesAdapter.addDevice(s);
+        if (devicesAdapter.addDevice(s))
+            broadcastPresence();
+            
     }
 
     @Override
@@ -148,6 +140,17 @@ public class DevicesActivity extends AppCompatActivity implements
     /**
      *      OTHER STUFF
      */
+    private void broadcastPresence() {
+        // construir objeto de mensaje
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("manufacturer ",Build.MANUFACTURER);
+        data.put("model", Build.MODEL);
+
+        // since this is a broadcast message, it's not necessary to specify a receiver
+        Message message = Bridgefy.createMessage(null, data);
+        Bridgefy.sendBroadcastMessage(message);
+    }
+    
     private void initializeBridgefy() {
         Bridgefy.initialize(getApplicationContext(), this);
     }
@@ -176,11 +179,14 @@ public class DevicesActivity extends AppCompatActivity implements
             return devices.size();
         }
 
-        void addDevice(String device) {
+        boolean addDevice(String device) {
             if (!devices.contains(device)) {
                 devices.add(device);
                 notifyItemInserted(devices.size() - 1);
+                return true;
             }
+            
+            return false;
         }
 
         void removeDevice(Device device) {
