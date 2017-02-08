@@ -22,10 +22,8 @@ import com.bridgefy.sdk.client.Device;
 import com.bridgefy.sdk.client.DeviceListener;
 import com.bridgefy.sdk.client.Message;
 import com.bridgefy.sdk.client.MessageListener;
-import com.bridgefy.sdk.framework.controller.Session;
 import com.bridgefy.sdk.framework.entities.ForwardPacket;
 import com.bridgefy.sdk.framework.exceptions.MessageException;
-import com.bridgefy.sdk.framework.network.ConnectionType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,20 +93,20 @@ public class DevicesActivity extends AppCompatActivity implements
      *      BRIDGEFY WORKFLOW LISTENERS
      */
     @Override
-    public void onDeviceConnected(Device device, ConnectionType connectionType) {
+    public void onDeviceConnected(Device device) {
         Log.i(TAG, "Device found: " + device.getUserId());
         broadcastPresence();
     }
 
     @Override
-    public void onDeviceLost(Device device, ConnectionType deviceType) {
+    public void onDeviceLost(Device device) {
         Log.w(TAG, "Device lost: " + device.getUserId());
     }
 
     @Override
-    public void onMessageReceived(Session session, Message message) {
+    public void onMessageReceived(Message message) {
         String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
-        Log.d(TAG, "Message Received: " + session.getDevice().getUserId() + ", content: " + s);
+        Log.d(TAG, "Message Received: " + message.getSenderId() + ", content: " + s);
         devicesAdapter.addDevice(s);
     }
 
@@ -123,12 +121,11 @@ public class DevicesActivity extends AppCompatActivity implements
         Log.d(TAG, "Message Received: content: " + s);
         if (devicesAdapter.addDevice(s))
             broadcastPresence();
-            
     }
 
     @Override
-    public void onMessageSent(Session session, Message message) {
-        Log.d(TAG, "Message sent to: " + session.getUuid());
+    public void onMessageSent(Message message) {
+        Log.d(TAG, "Message sent to: " + message.getReceiverId());
     }
 
     @Override
