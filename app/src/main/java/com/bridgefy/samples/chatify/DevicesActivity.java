@@ -150,6 +150,8 @@ public class DevicesActivity extends AppCompatActivity implements
         // since this is a broadcast message, it's not necessary to specify a receiver
         Message message = Bridgefy.createMessage(null, data);
         Bridgefy.sendBroadcastMessage(message);
+
+        Log.d(TAG, "Presence broadcasted!");
     }
     
     private void initializeBridgefy() {
