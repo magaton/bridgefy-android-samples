@@ -22,7 +22,8 @@ import com.bridgefy.sdk.client.Device;
 import com.bridgefy.sdk.client.DeviceListener;
 import com.bridgefy.sdk.client.Message;
 import com.bridgefy.sdk.client.MessageListener;
-import com.bridgefy.sdk.framework.entities.ForwardPacket;
+import com.bridgefy.sdk.client.RegistrationListener;
+import com.bridgefy.sdk.client.Session;
 import com.bridgefy.sdk.framework.exceptions.MessageException;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import butterknife.ButterKnife;
 
 
 public class DevicesActivity extends AppCompatActivity implements
-        DeviceListener, MessageListener, Bridgefy.RegistrationListener {
+        DeviceListener, MessageListener, RegistrationListener {
 
     private final String TAG = "DevicesActivity";
 
@@ -92,8 +93,10 @@ public class DevicesActivity extends AppCompatActivity implements
     /**
      *      BRIDGEFY WORKFLOW LISTENERS
      */
+
+
     @Override
-    public void onDeviceConnected(Device device) {
+    public void onDeviceConnected(Device device, Session session) {
         Log.i(TAG, "Device found: " + device.getUserId());
         broadcastPresence();
     }
@@ -129,8 +132,9 @@ public class DevicesActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onMessageReceivedException(ForwardPacket forwardPacket, MessageException e) {
+    public void onMessageReceivedException(String s, MessageException e) {
         Log.e(TAG, e.getMessage());
+
     }
 
 
