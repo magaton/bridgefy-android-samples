@@ -12,10 +12,14 @@ buildscript {
     }
 }
 
+ext {
+    enableDexGuardPlugin = false
+    enableArtifactory = false
+}
+
 allprojects {
     repositories {
         jcenter()
-
 
         maven {
             url "http://maven.bridgefy.com/artifactory/libs-release-local"
@@ -26,12 +30,9 @@ allprojects {
                 //username = "${artifactory_username}"
                 //password = "${artifactory_password}"
             }
-
-
         }
     }
 }
-
 
 task clean(type: Delete) {
     delete rootProject.buildDir
