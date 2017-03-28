@@ -1,4 +1,4 @@
-package com.bridgefy.samples.chatify;
+package com.bridgefy.samples.nearby;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -90,9 +90,19 @@ public class DevicesActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Bridgefy.stop();
+    }
+
     /**
      *      BRIDGEFY WORKFLOW LISTENERS
      */
+
+
+
 
 
     @Override

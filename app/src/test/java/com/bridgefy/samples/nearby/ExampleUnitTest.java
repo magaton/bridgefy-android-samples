@@ -1,4 +1,4 @@
-package com.bridgefy.samples.chatify;
+package com.bridgefy.samples.nearby;
 
 import org.junit.Test;
 
