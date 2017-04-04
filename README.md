@@ -2,11 +2,11 @@
 
 # Quick Start Guide #
 
-This guide will show you the necessary steps to start using the Bridgefy SDK on your app.
+This guide will show you the necessary steps to start using the Bridgefy SDK on your app. Keep in mind that the Bridgefy SDK supports Android 5.0 (**API Level 21**) or higher.
 
-**System Requirements**
+**App Requirements**
 
-The Bridgefy SDK supports Android 5.0 (**API Level 21**) or higher. The following permission are required:
+First of all, the following permission are required so be sure to include them in your AndroidManifest.xml file:
 
 ```java
 android.permission.BLUETOOTH
@@ -31,7 +31,7 @@ android.permission.ACCESS_COARSE_LOCATION
 
 This version is fine tuned for Bluetooth Low Energy (BLE) capable devices. While it is not required, it is preferable that the _BLE advertising mode_ is also supported. The Bridgefy SDK will let you know during initialization if your devices support _BLE advertising_ or not. At least one device should support advertising mode in order for connections and, thus, messaging functionality, to be successful.
 
-### Initial Setup ###
+## Initial Setup ##
 
 In order to include the Bridgefy SDK in your project, first add the following repository in your top-level gradle file:
 
@@ -61,10 +61,10 @@ allprojects {
 Then, add the dependency in your app's gradle file:
 
 ```xml
-compile 'com.bridgefy:android-sdk:1.0.6'
+compile 'com.bridgefy:android-sdk:1.0.8'
 ```
 
-### Initialize Bridgefy ###
+## Initialize Bridgefy ##
 The Bridgefy SDK needs only a call to the static **initialize()** method in order to create all required objects and to be ready to start operations.
 
 ```java
@@ -114,7 +114,7 @@ Once the registration has been successful you will now be ready to start the Bri
 
 
 ```java
-Bridgefy.start(mDeviceListener, mMessageListener);
+Bridgefy.start(deviceListener, messageListener);
 ```
 
 At this point, the **DeviceListener** callback will start letting you know every time a successful connection has been established with a nearby Bridgefy device. It will also notify you when a device has moved out of range or has disconnected for another reason.
@@ -153,11 +153,11 @@ Bridgefy.sendMessage(message);
 
 You can send messages to other devices even if they haven't been reported as connected or in-range. The Bridgefy SDK will do the best effort to deliver the message to it's recipient through intermediate devices. Message content is secured through a 256-bit encryption which is managed seamlessly for you so you don't have to worry about other users tapping into your private message.
 
-You can also send public messages which will be propagated through all nearby devices. Those are even easier to send:
+You can also send public messages which will be propagated to all nearby devices. Those are even easier to send:
 
 ```java
-// Create a Message object with just the HashMap
-Message broadcastMessage = Bridgefy.createMessage(null, data);
+// Create a Message object with just the HashMap as a parameter
+Message broadcastMessage = Bridgefy.createMessage(data);
 Bridgefy.sendBroadcastMessage(broadcastMessage);
 ```
 
@@ -209,7 +209,7 @@ If you are using Proguard in your project, include the following lines to your c
 
 ## Supported Devices ##
 
-As of February 2017, the following devices have been tested with Bridgefy and offer the best performance:
+As of March 2017, the following devices have been tested with Bridgefy and offer the best performance:
 
 * Nexus 6P
 * Nexus 5X
