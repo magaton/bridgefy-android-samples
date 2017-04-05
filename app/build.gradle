@@ -29,14 +29,11 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    // use the local sdk files (modify the settings.gradle file as well)
-//    compile project(':bridgefy-sdk-android')
+
 
     // use the bridgefy distribution
-    compile('com.bridgefy:android-sdk:1.0.6@aar') {
-        transitive = true
-        changing = true
-    }
+    compile'com.bridgefy:android-sdk:1.0.8'
+
 
 
     compile 'com.jakewharton:butterknife:8.4.0'

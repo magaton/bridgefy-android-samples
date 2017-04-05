@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:2.3.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -24,10 +24,6 @@ allprojects {
         maven {
             url "http://maven.bridgefy.com/artifactory/libs-release-local"
             artifactUrls=["http://jcenter.bintray.com/"]
-            credentials {
-                 username = "reader"
-                 password = "AP4qEm1vV2K6ScdhYngnZwLjMGS"
-            }
         }
     }
 }
