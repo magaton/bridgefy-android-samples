@@ -56,7 +56,7 @@ allprojects {
 Then, add the dependency in your app's gradle file:
 
 ```xml
-compile 'com.bridgefy:android-sdk:1.0.8'
+compile 'com.bridgefy:android-sdk:1.0.9'
 ```
 
 ## Initialize Bridgefy ##
@@ -112,6 +112,19 @@ Once the registration has been successful you will now be ready to start the Bri
 Bridgefy.start(deviceListener, messageListener);
 ```
 
+You can also use a custom **Config** object to set additional options
+
+
+
+```java
+Config.Builder builder = new Config.Builder();
+builder.setEnergyProfile(BFEnergyProfile.HIGH_PERFORMANCE);
+builder.setEncryption(false);
+Bridgefy.start(deviceListener, messageListener,builder.build());
+```
+
+
+
 At this point, the **DeviceListener** callback will start letting you know every time a successful connection has been established with a nearby Bridgefy device. It will also notify you when a device has moved out of range or has disconnected for another reason.
 
 ```java
@@ -130,7 +143,7 @@ public void onDeviceLost(Device device) {
 
 
 
-## Sending messages and receiving messages ##
+## Sending messages and receiving messages##
 
 In order to send messages you will need to build a **Message** object which is basically a **HashMap** tied to a **UUID** represented as a string; this way, Bridgefy will know where to send it. 
 
@@ -204,7 +217,7 @@ If you are using Proguard in your project, include the following lines to your c
 
 ## Supported Devices ##
 
-As of March 2017, the following devices have been tested with Bridgefy and offer the best performance:
+As of April 2017, the following devices have been tested with Bridgefy and offer the best performance:
 
 * Nexus 6P
 * Nexus 5X
