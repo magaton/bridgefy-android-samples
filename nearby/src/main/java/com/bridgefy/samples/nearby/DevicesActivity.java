@@ -33,8 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class DevicesActivity extends AppCompatActivity implements
-        DeviceListener, MessageListener, RegistrationListener {
+public class DevicesActivity extends AppCompatActivity {
 
     private final String TAG = "DevicesActivity";
 
@@ -64,32 +63,6 @@ public class DevicesActivity extends AppCompatActivity implements
         }
     }
 
-
-    /**
-     *      BRIDGEFY REGISTRATION LISTENERS
-     */
-    @Override
-    public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
-        Log.i(TAG, "onRegistrationSuccessful: current userId is: " + bridgefyClient.getUserUuid());
-        Log.i(TAG, "Device Rating " + bridgefyClient.getDeviceProfile().getRating());
-        Log.i(TAG, "Device Evaluation " + bridgefyClient.getDeviceProfile().getDeviceEvaluation());
-
-        // Start the Bridgefy SDK
-        Bridgefy.start(this, this);
-    }
-
-    @Override
-    public void onRegistrationFailed(int errorCode, String message) {
-        Log.e(TAG, "onRegistrationFailed: failed with ERROR_CODE: " + errorCode + ", MESSAGE: " + message);
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(DevicesActivity.this, "Bridgefy registration did not succeed.", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -97,61 +70,96 @@ public class DevicesActivity extends AppCompatActivity implements
         Bridgefy.stop();
     }
 
+
+    /**
+     *      BRIDGEFY REGISTRATION LISTENERS
+     */
+
+    RegistrationListener registrationListener=new RegistrationListener() {
+        @Override
+        public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
+            Log.i(TAG, "onRegistrationSuccessful: current userId is: " + bridgefyClient.getUserUuid());
+            Log.i(TAG, "Device Rating " + bridgefyClient.getDeviceProfile().getRating());
+            Log.i(TAG, "Device Evaluation " + bridgefyClient.getDeviceProfile().getDeviceEvaluation());
+
+            // Start the Bridgefy SDK
+            Bridgefy.start(deviceListener, messageListener);
+        }
+
+        @Override
+        public void onRegistrationFailed(int errorCode, String message) {
+            Log.e(TAG, "onRegistrationFailed: failed with ERROR_CODE: " + errorCode + ", MESSAGE: " + message);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(DevicesActivity.this, "Bridgefy registration did not succeed.", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
+
+
+
+
+
+
     /**
      *      BRIDGEFY WORKFLOW LISTENERS
      */
 
 
 
+    DeviceListener deviceListener=new DeviceListener() {
+        @Override
+        public void onDeviceConnected(Device device, Session session) {
+            Log.i(TAG, "Device found: " + device.getUserId());
+            sendMessage(device);
+        }
+
+        @Override
+        public void onDeviceLost(Device device) {
+            Log.w(TAG, "Device lost: " + device.getUserId());
+        }
+    };
 
 
-    @Override
-    public void onDeviceConnected(Device device, Session session) {
-        Log.i(TAG, "Device found: " + device.getUserId());
-        broadcastPresence();
-    }
 
-    @Override
-    public void onDeviceLost(Device device) {
-        Log.w(TAG, "Device lost: " + device.getUserId());
-    }
 
-    @Override
-    public void onMessageReceived(Message message) {
-        String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
-        Log.d(TAG, "Message Received: " + message.getSenderId() + ", content: " + s);
-        devicesAdapter.addDevice(s);
-    }
+    MessageListener messageListener=new MessageListener() {
 
-    @Override
-    public void onMessageFailed(Message message, MessageException e) {
-        Log.e(TAG, "Message failed", e);
-    }
+        @Override
+        public void onMessageReceived(Message message) {
+            String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
+            Log.d(TAG, "Message Received: " + message.getSenderId() + ", content: " + s);
+            devicesAdapter.addDevice(s);
+        }
 
-    @Override
-    public void onBroadcastMessageReceived(Message message) {
-        String s = message.getContent().get("manufacturer ") + " " + message.getContent().get("model");
-        Log.d(TAG, "Message Received: content: " + s);
-        if (devicesAdapter.addDevice(s))
-            broadcastPresence();
-    }
+        @Override
+        public void onMessageFailed(Message message, MessageException e) {
+            Log.e(TAG, "Message failed", e);
+        }
 
-    @Override
-    public void onMessageSent(Message message) {
-        Log.d(TAG, "Message sent to: " + message.getReceiverId());
-    }
 
-    @Override
-    public void onMessageReceivedException(String s, MessageException e) {
-        Log.e(TAG, e.getMessage());
+        @Override
+        public void onMessageSent(Message message) {
+            Log.d(TAG, "Message sent to: " + message.getReceiverId());
+        }
 
-    }
+        @Override
+        public void onMessageReceivedException(String s, MessageException e) {
+            Log.e(TAG, e.getMessage());
+
+        }
+
+    };
+
+
 
 
     /**
      *      OTHER STUFF
      */
-    private void broadcastPresence() {
+    private void sendMessage(Device device) {
         // construir objeto de mensaje
         HashMap<String, Object> data = new HashMap<>();
         data.put("manufacturer ",Build.MANUFACTURER);
@@ -159,13 +167,13 @@ public class DevicesActivity extends AppCompatActivity implements
 
         // since this is a broadcast message, it's not necessary to specify a receiver
         Message message = Bridgefy.createMessage(null, data);
-        Bridgefy.sendBroadcastMessage(message);
+        device.sendMessage(data);
 
-        Log.d(TAG, "Presence broadcasted!");
+        Log.d(TAG, "Message sent!");
     }
     
     private void initializeBridgefy() {
-        Bridgefy.initialize(getApplicationContext(), this);
+        Bridgefy.initialize(getApplicationContext(), registrationListener);
     }
 
     @Override

@@ -32,7 +32,7 @@ dependencies {
 
 
     // use the bridgefy distribution
-    compile'com.bridgefy:android-sdk:1.0.8'
+    compile'com.bridgefy:android-sdk:1.0.9'
 
 
 
