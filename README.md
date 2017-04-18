@@ -143,7 +143,7 @@ public void onDeviceLost(Device device) {
 
 
 
-## Sending messages and receiving messages##
+## Sending messages and receiving messages ##
 
 In order to send messages you will need to build a **Message** object which is basically a **HashMap** tied to a **UUID** represented as a string; this way, Bridgefy will know where to send it. 
 
