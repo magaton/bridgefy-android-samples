@@ -54,7 +54,7 @@ In order to include the Bridgefy SDK in your project, first add the following re
 Then, add the dependency in your app's gradle file:
 
 ```xml
-compile 'com.bridgefy:android-sdk:1.0.9'
+compile 'com.bridgefy:android-sdk:1.0.10'
 ```
 
 ## Initialize Bridgefy ##
