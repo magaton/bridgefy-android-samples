@@ -94,7 +94,6 @@ The following error codes may be returned if something went wrong:
 ```php
 -1     registration failed (check specific reason in message
 -2     registration failed due to a communications error (e.g. no Internet available)
--3     registration failed because device requirements were not met (e.g. device doesn't support BLE)
 ```
 
 
@@ -107,7 +106,7 @@ Once the registration has been successful you will now be ready to start the Bri
 
 
 ```java
-Bridgefy.start(deviceListener, messageListener);
+Bridgefy.start(deviceListener, messageListener,stateListener);
 ```
 
 You can also use a custom **Config** object to set additional options
