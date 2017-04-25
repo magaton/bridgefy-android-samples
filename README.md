@@ -79,7 +79,7 @@ The result of the initialization will be delivered asynchronously to your **Regi
 @Override
 public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
     // Bridgefy is ready to start
-    Bridgefy.start(deviceListener, messageListener);
+    Bridgefy.start(messageListener, stateListener);
 }
 
 @Override
@@ -106,7 +106,7 @@ Once the registration has been successful you will now be ready to start the Bri
 
 
 ```java
-Bridgefy.start(deviceListener, messageListener,stateListener);
+Bridgefy.start(messageListener,stateListener);
 ```
 
 You can also use a custom **Config** object to set additional options
@@ -117,12 +117,12 @@ You can also use a custom **Config** object to set additional options
 Config.Builder builder = new Config.Builder();
 builder.setEnergyProfile(BFEnergyProfile.HIGH_PERFORMANCE);
 builder.setEncryption(false);
-Bridgefy.start(deviceListener, messageListener,builder.build());
+Bridgefy.start(messageListener,stateListener,builder.build());
 ```
 
 
 
-At this point, the **DeviceListener** callback will start letting you know every time a successful connection has been established with a nearby Bridgefy device. It will also notify you when a device has moved out of range or has disconnected for another reason.
+At this point, the **StateListener** callback will let you know every time a successful connection has been established with a nearby Bridgefy device. It will also notify you when a device has moved out of range or has disconnected for another reason.
 
 ```java
 @Override
