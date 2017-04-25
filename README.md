@@ -2,11 +2,10 @@
 
 # Quick Start Guide #
 
-This guide will show you the necessary steps to start using the Bridgefy SDK on your app. Keep in mind that the Bridgefy SDK supports Android 5.0 (**API Level 21**) or higher.
+This guide will show you the necessary steps to start using the Bridgefy SDK on your app. The first step is to generate an API key at http://bridgefy.me.
 
 **App Requirements**
-
-First of all, the following permission are required so be sure to include them in your AndroidManifest.xml file:
+The Bridgefy SDK supports Android 5.0 (**API Level 21**) or higher and the following permission are required.
 
 ```java
 android.permission.BLUETOOTH
