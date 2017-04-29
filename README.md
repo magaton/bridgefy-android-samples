@@ -2,11 +2,10 @@
 
 # Quick Start Guide #
 
-This guide will show you the necessary steps to start using the Bridgefy SDK on your app. Keep in mind that the Bridgefy SDK supports Android 5.0 (**API Level 21**) or higher.
+This guide will show you the necessary steps to start using the Bridgefy SDK on your app. The first step is to generate an API key at http://bridgefy.me.
 
 **App Requirements**
-
-First of all, the following permission are required so be sure to include them in your AndroidManifest.xml file:
+The Bridgefy SDK supports Android 5.0 (**API Level 21**) or higher and the following permission are required.
 
 ```java
 android.permission.BLUETOOTH
@@ -38,7 +37,6 @@ In order to include the Bridgefy SDK in your project, first add the following re
 
 
 ```java
-allprojects {
     repositories {
         ...
 
@@ -48,7 +46,6 @@ allprojects {
         }
      ....
     }
-}
 ```
 
 
@@ -56,7 +53,7 @@ allprojects {
 Then, add the dependency in your app's gradle file:
 
 ```xml
-compile 'com.bridgefy:android-sdk:1.0.8'
+compile 'com.bridgefy:android-sdk:1.0.10'
 ```
 
 ## Initialize Bridgefy ##
@@ -81,7 +78,7 @@ The result of the initialization will be delivered asynchronously to your **Regi
 @Override
 public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
     // Bridgefy is ready to start
-    Bridgefy.start(deviceListener, messageListener);
+    Bridgefy.start(messageListener, stateListener);
 }
 
 @Override
@@ -96,7 +93,6 @@ The following error codes may be returned if something went wrong:
 ```php
 -1     registration failed (check specific reason in message
 -2     registration failed due to a communications error (e.g. no Internet available)
--3     registration failed because device requirements were not met (e.g. device doesn't support BLE)
 ```
 
 
@@ -109,10 +105,23 @@ Once the registration has been successful you will now be ready to start the Bri
 
 
 ```java
-Bridgefy.start(deviceListener, messageListener);
+Bridgefy.start(messageListener,stateListener);
 ```
 
-At this point, the **DeviceListener** callback will start letting you know every time a successful connection has been established with a nearby Bridgefy device. It will also notify you when a device has moved out of range or has disconnected for another reason.
+You can also use a custom **Config** object to set additional options
+
+
+
+```java
+Config.Builder builder = new Config.Builder();
+builder.setEnergyProfile(BFEnergyProfile.HIGH_PERFORMANCE);
+builder.setEncryption(false);
+Bridgefy.start(messageListener,stateListener,builder.build());
+```
+
+
+
+At this point, the **StateListener** callback will let you know every time a successful connection has been established with a nearby Bridgefy device. It will also notify you when a device has moved out of range or has disconnected for another reason.
 
 ```java
 @Override
@@ -204,7 +213,7 @@ If you are using Proguard in your project, include the following lines to your c
 
 ## Supported Devices ##
 
-As of March 2017, the following devices have been tested with Bridgefy and offer the best performance:
+As of April 2017, the following devices have been tested with Bridgefy and offer the best performance:
 
 * Nexus 6P
 * Nexus 5X
