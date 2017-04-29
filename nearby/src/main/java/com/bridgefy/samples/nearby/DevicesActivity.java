@@ -19,11 +19,11 @@ import android.widget.Toast;
 import com.bridgefy.sdk.client.Bridgefy;
 import com.bridgefy.sdk.client.BridgefyClient;
 import com.bridgefy.sdk.client.Device;
-import com.bridgefy.sdk.client.DeviceListener;
 import com.bridgefy.sdk.client.Message;
 import com.bridgefy.sdk.client.MessageListener;
 import com.bridgefy.sdk.client.RegistrationListener;
 import com.bridgefy.sdk.client.Session;
+import com.bridgefy.sdk.client.StateListener;
 import com.bridgefy.sdk.framework.exceptions.MessageException;
 
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class DevicesActivity extends AppCompatActivity {
             Log.i(TAG, "Device Evaluation " + bridgefyClient.getDeviceProfile().getDeviceEvaluation());
 
             // Start the Bridgefy SDK
-            Bridgefy.start(deviceListener, messageListener);
+            Bridgefy.start(messageListener,stateListener);
         }
 
         @Override
@@ -108,8 +108,7 @@ public class DevicesActivity extends AppCompatActivity {
      */
 
 
-
-    DeviceListener deviceListener=new DeviceListener() {
+        StateListener stateListener =new StateListener() {
         @Override
         public void onDeviceConnected(Device device, Session session) {
             Log.i(TAG, "Device found: " + device.getUserId());
@@ -119,6 +118,25 @@ public class DevicesActivity extends AppCompatActivity {
         @Override
         public void onDeviceLost(Device device) {
             Log.w(TAG, "Device lost: " + device.getUserId());
+        }
+
+
+        @Override
+        public void onStarted() {
+            super.onStarted();
+            Log.i(TAG, "onStarted: Bridgefy started");
+        }
+
+        @Override
+        public void onStartError(String s, int i) {
+            super.onStartError(s, i);
+            Log.e(TAG, "onStartError: "+s +" "+ i );
+        }
+
+        @Override
+        public void onStopped() {
+            super.onStopped();
+            Log.w(TAG, "onStopped: Bridgefy stopped");
         }
     };
 
@@ -173,6 +191,8 @@ public class DevicesActivity extends AppCompatActivity {
     }
     
     private void initializeBridgefy() {
+
+        //Always use steady context objects to avoid leaks
         Bridgefy.initialize(getApplicationContext(), registrationListener);
     }
 
