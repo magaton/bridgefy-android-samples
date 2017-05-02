@@ -5,6 +5,7 @@
 This guide will show you the necessary steps to start using the Bridgefy SDK on your app. The first step is to generate an API key at http://bridgefy.me.
 
 **App Requirements**
+
 The Bridgefy SDK supports Android 5.0 (**API Level 21**) or higher and the following permission are required.
 
 ```java
@@ -60,14 +61,14 @@ compile 'com.bridgefy:android-sdk:1.0.10'
 The Bridgefy SDK needs only a call to the static **initialize()** method in order to create all required objects and to be ready to start operations.
 
 ```java
-Bridgefy.initialize(Context context, String apiKey, RegistrationListener registrationListener);
-```
-Alternatively, you can provide a null argument instead of the **apiKey** if you included it in your **AndroidManifest.xml** file.
+        //Always use steady context objects to avoid leaks
+        Bridgefy.initialize(getApplicationContext(), XXXXXXXX-XXXX-XXXX-XXXX-XXXX ,registrationListener);```
+Alternatively, you can provide the **apiKey** in your **AndroidManifest.xml** file.
 
 ```xml
 <meta-data
             android:name="com.bridgefy.sdk.API_KEY"
-            android:value="..." />
+            android:value="XXXXXXXX-XXXX-XXXX-XXXX-XXXX" />
 ```
 
 This call requires an active Internet connection on the device in order to check the status of your Bridgefy license. As long as your license is valid, an Internet connection won't be needed again until the time comes to renew or update it.
