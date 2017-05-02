@@ -62,13 +62,14 @@ The Bridgefy SDK needs only a call to the static **initialize()** method in orde
 
 ```java
         //Always use steady context objects to avoid leaks
-        Bridgefy.initialize(getApplicationContext(), XXXXXXXX-XXXX-XXXX-XXXX-XXXX ,registrationListener);```
+        Bridgefy.initialize(getApplicationContext(), XXXXXXXX-XXXX-XXXX-XXXX-XXXX ,registrationListener);
+```
 Alternatively, you can provide the **apiKey** in your **AndroidManifest.xml** file.
 
 ```xml
 <meta-data
             android:name="com.bridgefy.sdk.API_KEY"
-            android:value="XXXXXXXX-XXXX-XXXX-XXXX-XXXX" />
+            android:value=... />
 ```
 
 This call requires an active Internet connection on the device in order to check the status of your Bridgefy license. As long as your license is valid, an Internet connection won't be needed again until the time comes to renew or update it.
