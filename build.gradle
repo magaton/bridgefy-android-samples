@@ -20,11 +20,6 @@ ext {
 allprojects {
     repositories {
         jcenter()
-
-        maven {
-            url "http://maven.bridgefy.com/artifactory/libs-release-local"
-            artifactUrls=["http://jcenter.bintray.com/"]
-        }
     }
 }
 
