@@ -1,4 +1,4 @@
-include ':app'
+include ':nearby', ':broadcast-alerts', ':tic-tac-toe'
 
 // enable this to access the bridgefy local sdk files (modify the app:build.gradle file as well)
 //include ':app', ':bridgefy-sdk-android'
