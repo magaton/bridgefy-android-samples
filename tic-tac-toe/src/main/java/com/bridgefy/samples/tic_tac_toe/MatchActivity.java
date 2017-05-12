@@ -2,31 +2,21 @@ package com.bridgefy.samples.tic_tac_toe;
 
 import android.os.Bundle;
 
-import com.bridgefy.sdk.client.Bridgefy;
-import com.bridgefy.sdk.client.Message;
-import com.bridgefy.sdk.client.MessageListener;
-
 public class MatchActivity extends TicTacToeActivity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // set the current activity as the MessageListener
-        Bridgefy.setMessageListener(messageListener);
+        // register this activity as a Bus listener
+        BridgefyListener.getOttoBus().register(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        // unregister this activity as a Bus listener
+        BridgefyListener.getOttoBus().unregister(this);
 
-    MessageListener messageListener = new MessageListener() {
-        @Override
-        public void onMessageReceived(Message message) {
-            // TODO make a move
-        }
-
-        @Override
-        public void onMessageSent(Message message) {
-            // TODO make a move
-        }
-    };
+        super.onDestroy();
+    }
 }

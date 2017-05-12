@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">Tic Tac Toe</string>
 
-    <!-- Intro Activity -->
+    <!-- General Strings -->
+    <string name="app_name">Tic Tac Toe</string>
     <string name="text_intro">
         Welcome to Tic Tac Toe by Bridgefy!\n
         You can play with people that are up to 330 feet (100 meters) from you, without Internet!\n
@@ -16,10 +16,8 @@
     <string name="button_start">Play</string>
     <string name="error">Oops, an unexpected error occurred!</string>
 
-
+    <!-- Game related strings -->
     <string name="X">"   X   "</string>
     <string name="O">"   O   "</string>
     <string name="none">"          "</string>
-    <string name="title_activity_intro">IntroActivity</string>
-    <string name="title_activity_users">MainActivity</string>
 </resources>

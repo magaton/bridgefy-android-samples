@@ -5,7 +5,13 @@ package com.bridgefy.samples.tic_tac_toe;
  */
 public class Constants {
 
+    public final static String PREFS_NAME = "com.bridgefy.samples.tic_tac_toe";
+    public final static String PREFS_USERNAME = "username";
 
-    public final static String PREFS_NAME ="com.bridgefy.samples.tic_tac_toe";
-    public final static String PREFS_USERNAME ="username";
+
+    public enum PlayerSymbol {
+        FREE,
+        X,
+        O
+    }
 }

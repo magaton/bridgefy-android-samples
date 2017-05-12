@@ -10,25 +10,25 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MatchActivity"></activity>
+        <activity android:name=".MatchActivity" />
         <activity
             android:name=".IntroActivity"
-            android:label="@string/title_activity_intro"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_users"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <!-- Bridgefy SDK key -->
+        <meta-data
+            android:name="com.bridgefy.sdk.API_KEY"
+            android:value="47671d1a-af05-47a2-ac38-c40539700b78" />
     </application>
-
-    <!-- Bridgefy SDK key -->
-    <meta-data
-        android:name="com.bridgefy.sdk.API_KEY"
-        android:value="47671d1a-af05-47a2-ac38-c40539700b78" />
-
 </manifest>
