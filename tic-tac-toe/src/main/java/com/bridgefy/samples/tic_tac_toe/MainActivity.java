@@ -10,9 +10,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.bridgefy.samples.tic_tac_toe.entities.Move;
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
 import com.bridgefy.sdk.client.Bridgefy;
 import com.bridgefy.sdk.client.BridgefyClient;
+import com.bridgefy.sdk.client.Device;
 import com.bridgefy.sdk.client.RegistrationListener;
 import com.squareup.otto.Subscribe;
 
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
 
     private boolean isRegistered = false;
+    String username;
 
     @BindView(R.id.users_toolbar)
     Toolbar toolbar;
@@ -36,9 +39,14 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
+        // load our username
+        username = getSharedPreferences(Constants.PREFS_NAME, 0).getString(Constants.PREFS_USERNAME, null);
+        Log.e(TAG, "username: " + username);
+
         // check that we have permissions, otherwise fire the IntroActivity
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                (username == null)) {
             startActivity(new Intent(getBaseContext(), IntroActivity.class));
             finish();
         } else {
@@ -71,7 +79,29 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe
     public void onPlayerFound(Player player) {
         Log.d(TAG, "Player found: " + player.getNick());
+        // TODO add to our list
+
+        // TODO temorarily start activity with found partner
+        startActivity(
+                new Intent(getBaseContext(), MatchActivity.class)
+                    .putExtra(Constants.INTENT_EXTRA_PLAYER, player.toString()));
     }
+
+    @Subscribe
+    public void onPlayerLost(Device player) {
+        // The Player.uuid field is created with the first 5 digits of the Device.uuid field
+//        String playerId = player.getUserId().substring(0, 5);
+//        Log.d(TAG, "Player lost: " + playerId);
+//         TODO remove from our list
+    }
+
+    @Subscribe
+    public void onMoveReceived(Move move) {
+        Log.d(TAG, "Move received for matchId: " + move.getMatchId());
+        Log.d(TAG, "... " + move.toString());
+        // TODO update the matches views
+    }
+
 
 
     /**
@@ -85,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "... Device Evaluation " + bridgefyClient.getDeviceProfile().getDeviceEvaluation());
 
             // initialize our EventListener
-            BridgefyListener.initialize(getIntent().getStringExtra(Constants.PREFS_USERNAME));
+            BridgefyListener.initialize(bridgefyClient.getUserUuid(), username);
 
             // register this activity as a Bus listener
             BridgefyListener.getOttoBus().register(MainActivity.this);

@@ -20,4 +20,5 @@
     <string name="X">"   X   "</string>
     <string name="O">"   O   "</string>
     <string name="none">"          "</string>
+    <string name="match_rejected">Sorry, %1$s rejected your invitation to play</string>
 </resources>

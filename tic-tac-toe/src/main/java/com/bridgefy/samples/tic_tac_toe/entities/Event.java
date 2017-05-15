@@ -10,22 +10,21 @@ import java.util.HashMap;
  * @author dekaru on 5/9/17.
  */
 
-class Event<T> {
+public class Event<T> {
 
-    EventType event;
-    T content;
+    int event;
+    T   content;
 
-    enum EventType {
+    public enum EventType {
         FIRST_MESSAGE,
         AVAILABLE,
         MOVE_EVENT,
-        REFUSE_MATCH,
-        END_MATCH
+        REFUSE_MATCH
     }
 
 
     public Event(EventType event, T content) {
-        this.event = event;
+        this.event = event.ordinal();
         this.content = content;
     }
 

@@ -8,6 +8,8 @@ public class Constants {
     public final static String PREFS_NAME = "com.bridgefy.samples.tic_tac_toe";
     public final static String PREFS_USERNAME = "username";
 
+    public final static String INTENT_EXTRA_PLAYER = "player.uuid";
+
 
     public enum PlayerSymbol {
         FREE,

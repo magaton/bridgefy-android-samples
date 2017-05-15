@@ -25,18 +25,15 @@
 
             <TextView
                 style="@style/LeftCell"
-                android:layout_column="0">
-            </TextView>
+                android:layout_column="0"></TextView>
 
             <TextView
                 style="@style/MiddleCell"
-                android:layout_column="1">
-            </TextView>
+                android:layout_column="1"></TextView>
 
             <TextView
                 style="@style/RightCell"
-                android:layout_column="2">
-            </TextView>
+                android:layout_column="2"></TextView>
 
         </TableRow>
 
@@ -46,18 +43,15 @@
 
             <TextView
                 style="@style/LeftCell"
-                android:layout_column="0">
-            </TextView>
+                android:layout_column="0"></TextView>
 
             <TextView
                 style="@style/MiddleCell"
-                android:layout_column="1">
-            </TextView>
+                android:layout_column="1"></TextView>
 
             <TextView
                 style="@style/RightCell"
-                android:layout_column="2">
-            </TextView>
+                android:layout_column="2"></TextView>
 
         </TableRow>
 
@@ -67,18 +61,15 @@
 
             <TextView
                 style="@style/LeftCell"
-                android:layout_column="0">
-            </TextView>
+                android:layout_column="0"></TextView>
 
             <TextView
                 style="@style/MiddleCell"
-                android:layout_column="1">
-            </TextView>
+                android:layout_column="1"></TextView>
 
             <TextView
                 style="@style/RightCell"
-                android:layout_column="2">
-            </TextView>
+                android:layout_column="2"></TextView>
 
         </TableRow>
 

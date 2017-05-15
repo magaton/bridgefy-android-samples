@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -12,13 +11,19 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class TicTacToeActivity extends AppCompatActivity {
+public abstract class TicTacToeActivity extends AppCompatActivity {
 
     private int size;
     TableLayout mainBoard;
     TextView tv_turn;
+
     char[][] board;
+
+    // first turn is 'X'
     char turn;
+    char X = 'X';
+    char O = 'O';
+    boolean myTurn = true;
 
 
     @Override
@@ -27,9 +32,18 @@ public class TicTacToeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_board);
         ButterKnife.bind(this);
 
+        // TODO receive a seed for the board representing the board status
         initializeBoard();
     }
 
+    @OnClick(R.id.button_new_match)
+    protected void newMatch() {
+        Intent current = getIntent();
+        finish();
+        startActivity(current);
+    }
+
+    abstract void sendMove(char[][] board);
 
     protected void initializeBoard() {
         size = 3;
@@ -37,34 +51,91 @@ public class TicTacToeActivity extends AppCompatActivity {
         mainBoard = (TableLayout) findViewById(R.id.mainBoard);
         tv_turn = (TextView) findViewById(R.id.turn);
 
-        resetBoard();
+        turn = X;
+        resetBoard(null);
         tv_turn.setText("Turn: " + turn);
 
         for (int i = 0; i < mainBoard.getChildCount(); i++) {
             TableRow row = (TableRow) mainBoard.getChildAt(i);
             for (int j = 0; j < row.getChildCount(); j++) {
                 TextView tv = (TextView) row.getChildAt(j);
-                tv.setText(R.string.none);
-                tv.setOnClickListener(Move(i, j, tv));
+                tv.setOnClickListener(MoveListener(i, j, tv));
             }
         }
-
-        Button rstbtn = (Button) findViewById(R.id.button_new_match);
-        rstbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent current = getIntent();
-                finish();
-                startActivity(current);
-            }
-        });
     }
 
-    protected void resetBoard() {
-        turn = 'X';
+    View.OnClickListener MoveListener(final int r, final int c, final TextView tv) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (myTurn) {
+                    if (!isCellSet(r, c)) {
+                        // update the logic and visual board
+                        board[r][c] = turn;
+                        if (turn == X) {
+                            tv.setText(R.string.X);
+                            turn = O;
+                        } else if (turn == O) {
+                            tv.setText(R.string.O);
+                            turn = X;
+                        }
+
+                        // send the move
+                        sendMove(board);
+
+                        // get the game status
+                        if (gameStatus() == 0) {
+                            tv_turn.setText("Turn: " + turn);
+                        } else if (gameStatus() == -1) {
+                            tv_turn.setText("Game: Draw");
+                            stopMatch();
+                        } else {
+                            tv_turn.setText(turn + " Loses!");
+                            stopMatch();
+                        }
+                    } else {
+                        tv_turn.setText("Please choose a Cell Which is not already Occupied");
+                    }
+                } else {
+                    tv_turn.setText("Wait for your turn!");
+                }
+            }
+        };
+    }
+
+    protected boolean isCellSet(int r, int c) {
+        return !(board[r][c] == ' ');
+    }
+
+    protected void stopMatch() {
+        for (int i = 0; i < mainBoard.getChildCount(); i++) {
+            TableRow row = (TableRow) mainBoard.getChildAt(i);
+            for (int j = 0; j < row.getChildCount(); j++) {
+                TextView tv = (TextView) row.getChildAt(j);
+                tv.setOnClickListener(null);
+            }
+        }
+    }
+
+    protected void resetBoard(char[][] board) {
         for (int i = 0; i < size; i++) {
+            TableRow row = (TableRow) mainBoard.getChildAt(i);
             for (int j = 0; j < size; j++) {
-                board[i][j] = ' ';
+                char c = board != null ? board[i][j] : ' ';
+                this.board[i][j] = c;
+
+                TextView tv = (TextView) row.getChildAt(j);
+                switch (c) {
+                    case 'X':
+                        tv.setText(R.string.X);
+                        break;
+                    case 'O':
+                        tv.setText(R.string.O);
+                        break;
+                    default:
+                        tv.setText(R.string.none);
+                        break;
+                }
             }
         }
     }
@@ -133,55 +204,5 @@ public class TicTacToeActivity extends AppCompatActivity {
         }
 
         return (count_Equal == size);
-    }
-
-    protected boolean cellSet(int r, int c) {
-        return !(board[r][c] == ' ');
-    }
-
-    protected void stopMatch() {
-        for (int i = 0; i < mainBoard.getChildCount(); i++) {
-            TableRow row = (TableRow) mainBoard.getChildAt(i);
-            for (int j = 0; j < row.getChildCount(); j++) {
-                TextView tv = (TextView) row.getChildAt(j);
-                tv.setOnClickListener(null);
-            }
-        }
-    }
-
-    @OnClick(R.id.button_new_match)
-    protected void newMatch() {
-        Intent current = getIntent();
-        finish();
-        startActivity(current);
-    }
-
-    View.OnClickListener Move(final int r, final int c, final TextView tv) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!cellSet(r, c)) {
-                    board[r][c] = turn;
-                    if (turn == 'X') {
-                        tv.setText(R.string.X);
-                        turn = 'O';
-                    } else if (turn == 'O') {
-                        tv.setText(R.string.O);
-                        turn = 'X';
-                    }
-                    if (gameStatus() == 0) {
-                        tv_turn.setText("Turn: " + turn);
-                    } else if (gameStatus() == -1) {
-                        tv_turn.setText("Game: Draw");
-                        stopMatch();
-                    } else {
-                        tv_turn.setText(turn + " Loses!");
-                        stopMatch();
-                    }
-                } else {
-                    tv_turn.setText(tv_turn.getText() + " Please choose a Cell Which is not already Occupied");
-                }
-            }
-        };
     }
 }

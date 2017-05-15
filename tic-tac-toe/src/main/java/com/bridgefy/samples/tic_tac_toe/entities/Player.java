@@ -1,5 +1,7 @@
 package com.bridgefy.samples.tic_tac_toe.entities;
 
+import android.util.Log;
+
 import com.bridgefy.sdk.client.Message;
 import com.google.gson.Gson;
 
@@ -19,20 +21,17 @@ public class Player {
     private int    status;
 
 
-    public Player(String nick, int status) {
+    public Player(String uuid, String nick, int status) {
+        this.uuid = uuid;
         this.nick = nick;
         this.status = status;
     }
 
-    public Player(String nick, String uuid) {
-        this.nick = nick;
-        this.uuid = uuid;
-    }
 
-    public static HashMap<String, Object> create(String nick, int status) {
+    public HashMap<String, Object> toHashMap() {
         return new Event<>(
                 Event.EventType.FIRST_MESSAGE,
-                new Player(nick, status)).toHashMap();
+                this).toHashMap();
     }
 
     public static Player create(Message message) {
@@ -40,7 +39,12 @@ public class Player {
                                 new Gson().toJson(message.getContent().get("content")),
                                 Player.class);
         player.setUuid(message.getSenderId());
+        Log.w("Player", "Player created: " + player.toString());
         return player;
+    }
+
+    public static Player create(String json) {
+        return new Gson().fromJson(json, Player.class);
     }
 
 
@@ -52,7 +56,17 @@ public class Player {
         return status;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
     public void setUuid(String uuid) {
         this.uuid = uuid.substring(0, 5);
+    }
+
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }
