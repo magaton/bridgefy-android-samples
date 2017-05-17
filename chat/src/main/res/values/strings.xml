@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Chat</string>
+    <string name="title_peer_detail">Peer Detail</string>
+</resources>
