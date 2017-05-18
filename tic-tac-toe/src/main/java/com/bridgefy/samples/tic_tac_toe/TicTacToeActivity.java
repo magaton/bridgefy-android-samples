@@ -32,7 +32,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_board);
         ButterKnife.bind(this);
 
-        // TODO receive a seed for the board representing the board status
+        // TODO receive a seed for the board representing the board status (once boards are persisted)
         initializeBoard();
     }
 
@@ -43,7 +43,11 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         startActivity(current);
     }
 
+
     abstract void sendMove(char[][] board);
+
+    abstract void setWinner(char w);
+
 
     protected void initializeBoard() {
         size = 3;
@@ -91,6 +95,8 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                             stopMatch();
                         } else {
                             tv_turn.setText(turn + " Loses!");
+
+                            setWinner(turn == X ? O : X);
                             stopMatch();
                         }
                     } else {
@@ -138,6 +144,8 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                 }
             }
         }
+
+        tv_turn.setText("Turn: " + turn);
     }
 
     protected int gameStatus() {

@@ -10,16 +10,23 @@ import com.bridgefy.samples.tic_tac_toe.entities.RefuseMatch;
 import com.bridgefy.sdk.client.Bridgefy;
 import com.squareup.otto.Subscribe;
 
+import java.util.HashMap;
+
 public class MatchActivity extends TicTacToeActivity {
 
     private static final String TAG = "MatchActivity";
 
-    // use this variable to automatically reject incoming match requests when already playing
-    // this variable will be rendered useless when the sample app supports multi-match
+    // a globaly available variable that identifies the current match
     public static String currentMatchId;
 
-    // the Player object that represents our rival
+    // a unique string identifier for this match
+    public String matchId;
+
+    // a Player object representing our rival
     private Player player;
+
+    // a Participants object created
+    HashMap<Character, String> participants;
 
     private int sequence = 0;
 
@@ -31,13 +38,19 @@ public class MatchActivity extends TicTacToeActivity {
         // get our player object and set a matchId
         player = Player.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_PLAYER));
 
-        // TODO make this fixed
-        currentMatchId = "temporary.match.id";
-        Log.d(TAG, "Starting Match with: " + player.getNick());
-        Log.d(TAG, "            matchId: " + currentMatchId);
+        // generate our permanent matchId
+        matchId = generateMatchId(BridgefyListener.getUuid(), player.getUuid());
 
         // register this activity on the Otto plugin (not a part of the Bridgefy framework)
         BridgefyListener.getOttoBus().register(this);
+
+        // create our participants object for the Move message
+        participants = new HashMap<>();
+        participants.put(X, BridgefyListener.getUuid());
+        participants.put(O, player.getUuid());
+
+        Log.d(TAG, "Starting Match with: " + player.getNick());
+        Log.d(TAG, "            matchId: " + matchId);
     }
 
     @Override
@@ -46,17 +59,24 @@ public class MatchActivity extends TicTacToeActivity {
         BridgefyListener.getOttoBus().unregister(this);
 
         if (isFinishing())
-            currentMatchId = null;
+            matchId = null;
 
         super.onDestroy();
     }
 
-    // TODO add menu option to leave match (RefuseMatch object)
-
     @Override
     void sendMove(char[][] board) {
         myTurn = false;
-        Move move = new Move(currentMatchId, ++sequence, board);
+        Move move = new Move(matchId, ++sequence, board);
+        move.setParticipants(participants);
+        Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
+    }
+
+    @Override
+    void setWinner(char w) {
+        Move move = new Move(matchId, ++sequence, board);
+        move.setParticipants(participants);
+        move.setWinner(participants.get(w));
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
     }
 
@@ -68,15 +88,17 @@ public class MatchActivity extends TicTacToeActivity {
     @Subscribe
     public void onMoveReceived(Move move) {
         // work only with Move objects from our current match
-        if (move.getMatchId().equals(currentMatchId)) {
+        if (move.getMatchId().equals(matchId)) {
             if (move.getSequence() > sequence) {
                 Log.d(TAG, "Move received for matchId: " + move.getMatchId());
                 Log.d(TAG, "... " + move.toString());
 
                 // if the sequence is an odd number, it means that the other player started the match
-                if (move.getSequence()%2 != 0)
+                if (move.getSequence()%2 != 0) {
                     turn = O;
-                else
+                    participants.put(O, BridgefyListener.getUuid());
+                    participants.put(X, player.getUuid());
+                } else
                     turn = X;
 
                 // move the board
@@ -94,16 +116,27 @@ public class MatchActivity extends TicTacToeActivity {
 
     @Subscribe
     public void onMatchRefused(RefuseMatch refuseMatch) {
-        Log.d(TAG, "RefuseMatch received [matchId: " + refuseMatch.getMatchId() + "]");
-        if (refuseMatch.getMatchId().equals(currentMatchId)) {
+        Log.d(TAG, "RefuseMatch received for matchId: " + refuseMatch.getMatchId());
+        if (refuseMatch.getMatchId().equals(matchId)) {
             Toast.makeText(getBaseContext(),
                                 String.format(getString(R.string.match_rejected), player.getNick()),
-                                Toast.LENGTH_SHORT).show();
+                                Toast.LENGTH_LONG).show();
+            finish();
         }
     }
 
 
-    public static String getMatchId() {
+    public static String getCurrentMatchId() {
         return currentMatchId;
+    }
+
+    private String generateMatchId(String u1, String u2) {
+        // TODO matches are currently fixed
+//        return UUID.randomUUID().toString();
+        if (u1.charAt(0) > u2.charAt(0)) {
+            return u1.substring(0, 5) + "-" + u2.substring(0, 5) + System.currentTimeMillis()/1000;
+        } else {
+            return u2.substring(0, 5) + "-" + u1.substring(0, 5) + System.currentTimeMillis()/1000;
+        }
     }
 }

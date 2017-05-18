@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media_narrow.xml",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/layout-v11/notification_template_big_media_narrow.xml"
+    },
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/layout-v11/notification_media_action.xml",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/layout-v11/notification_media_action.xml"
+    },
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/layout-v11/notification_media_cancel_action.xml",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/layout-v11/notification_media_cancel_action.xml"
+    },
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media.xml",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/layout-v11/notification_template_big_media.xml"
+    },
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media_narrow_custom.xml",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/layout-v11/notification_template_big_media_narrow_custom.xml"
+    },
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/layout-v11/notification_template_big_media_custom.xml",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/layout-v11/notification_template_big_media_custom.xml"
+    }
+]

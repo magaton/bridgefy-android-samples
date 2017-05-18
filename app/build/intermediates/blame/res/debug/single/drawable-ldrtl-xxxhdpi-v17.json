@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_copy_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
+    },
+    {
+        "merged": "/Users/dekaru/p/a/bridgefy-android-samples/app/build/intermediates/res/merged/debug/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png",
+        "source": "/Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/res/drawable-ldrtl-xxxhdpi-v17/abc_ic_menu_cut_mtrl_alpha.png"
+    }
+]

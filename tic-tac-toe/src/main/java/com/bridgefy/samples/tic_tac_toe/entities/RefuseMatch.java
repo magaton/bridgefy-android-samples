@@ -11,8 +11,8 @@ import java.util.HashMap;
 
 public class RefuseMatch {
 
-    String mid;
-    boolean already_playing;
+    private String mid;
+    private boolean already_playing;
 
 
     public RefuseMatch(String mid, boolean already_playing) {
@@ -21,10 +21,10 @@ public class RefuseMatch {
     }
 
 
-    public static HashMap<String, Object> create(String mid, boolean already_playing) {
+    public HashMap<String, Object> toHashMap() {
         return new Event<>(
-                Event.EventType.FIRST_MESSAGE,
-                new RefuseMatch(mid, already_playing)).toHashMap();
+                Event.EventType.REFUSE_MATCH,
+                this).toHashMap();
     }
 
     public static RefuseMatch create(Message message) {

@@ -23,12 +23,12 @@ public class Event<T> {
     }
 
 
-    public Event(EventType event, T content) {
+    Event(EventType event, T content) {
         this.event = event.ordinal();
         this.content = content;
     }
 
-    public HashMap<String, Object> toHashMap() {
+    HashMap<String, Object> toHashMap() {
         Gson gson = new Gson();
         String s = gson.toJson(this);
         Type type = new TypeToken<HashMap<String, Object>>() {}.getType();

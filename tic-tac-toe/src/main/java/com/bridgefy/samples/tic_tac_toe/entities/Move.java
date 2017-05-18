@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class Move {
 
     String mid;
-    HashMap<String, String> participants; // TODO
+    HashMap<Character, String> participants;
     char[][] board = new char[3][3];
     int seq;
     String winner;  // TODO
@@ -37,7 +37,7 @@ public class Move {
     }
 
 
-    public void setParticipants(HashMap<String, String> participants) {
+    public void setParticipants(HashMap<Character, String> participants) {
         this.participants = participants;
     }
 

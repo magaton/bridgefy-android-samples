@@ -1,0 +1,131 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:2:1-30:12
+	package
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:4:5-42
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:3:5-63
+	android:versionCode
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:7:5-79
+	android:name
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:7:22-76
+uses-permission#android.permission.INTERNET
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:8:5-67
+MERGED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:16:5-67
+	android:name
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:8:22-64
+application
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:11:5-28:19
+MERGED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:18:5-24:19
+MERGED from [com.android.support:appcompat-v7:25.3.0] /Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-v4:25.3.0] /Users/dekaru/.android/build-cache/bce754e2432cbc580e1cf246c1880761a7ddd2db/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:25.3.0] /Users/dekaru/.android/build-cache/6b150e5646d9512dd708a04aa4f5f1282ad4f2be/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:25.3.0] /Users/dekaru/.android/build-cache/3f33dd97ff2e653d5507caba597545d96e2b7370/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:25.3.0] /Users/dekaru/.android/build-cache/3e8e4b9ab99b435386c0eb95777eec5427d2e6d5/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:animated-vector-drawable:25.3.0] /Users/dekaru/.android/build-cache/8e9a8e35705746285ff60184800155be95072e1f/output/AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:25.3.0] /Users/dekaru/.android/build-cache/811bf742d3e72b6d36ff938fc59d76e0322bd52d/output/AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-core-ui:25.3.0] /Users/dekaru/.android/build-cache/aa1468524d3267190624c38853e3bc895cae8dda/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-compat:25.3.0] /Users/dekaru/.android/build-cache/ffa384e9ecfbaf334963191f97d29845c99e6b66/output/AndroidManifest.xml:29:5-20
+	android:label
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:14:9-41
+	android:supportsRtl
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:15:9-35
+	android:allowBackup
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:12:9-35
+	android:icon
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:13:9-43
+	android:theme
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:16:9-40
+activity#com.bridgefy.samples.nearby.DevicesActivity
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:17:9-22:20
+	android:name
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:17:19-77
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:18:13-21:29
+action#android.intent.action.MAIN
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:19:17-69
+	android:name
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:19:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:20:17-77
+	android:name
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:20:27-74
+meta-data#com.bridgefy.sdk.API_KEY
+ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:25:9-27:68
+	android:value
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:27:13-65
+	android:name
+		ADDED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml:26:13-52
+uses-sdk
+INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+MERGED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:7:5-9:41
+MERGED from [com.jakewharton:butterknife:8.4.0] /Users/dekaru/.android/build-cache/6c5c9ab0687e48edfe68f28874a93004b9c75ffc/output/AndroidManifest.xml:5:5-43
+MERGED from [com.android.support:appcompat-v7:25.3.0] /Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:support-v4:25.3.0] /Users/dekaru/.android/build-cache/bce754e2432cbc580e1cf246c1880761a7ddd2db/output/AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-fragment:25.3.0] /Users/dekaru/.android/build-cache/6b150e5646d9512dd708a04aa4f5f1282ad4f2be/output/AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-media-compat:25.3.0] /Users/dekaru/.android/build-cache/3f33dd97ff2e653d5507caba597545d96e2b7370/output/AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-utils:25.3.0] /Users/dekaru/.android/build-cache/3e8e4b9ab99b435386c0eb95777eec5427d2e6d5/output/AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:animated-vector-drawable:25.3.0] /Users/dekaru/.android/build-cache/8e9a8e35705746285ff60184800155be95072e1f/output/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:25.3.0] /Users/dekaru/.android/build-cache/811bf742d3e72b6d36ff938fc59d76e0322bd52d/output/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:recyclerview-v7:25.3.0] /Users/dekaru/.android/build-cache/71cd95426bb02e6c7e5ccaad57342fe5e609076d/output/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-core-ui:25.3.0] /Users/dekaru/.android/build-cache/aa1468524d3267190624c38853e3bc895cae8dda/output/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:25.3.0] /Users/dekaru/.android/build-cache/ffa384e9ecfbaf334963191f97d29845c99e6b66/output/AndroidManifest.xml:21:5-23:58
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:25.3.0] /Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/dekaru/p/a/bridgefy-android-samples/app/src/main/AndroidManifest.xml
+uses-permission#android.permission.BLUETOOTH
+ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:11:5-68
+	android:name
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:11:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:12:5-74
+	android:name
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:12:22-71
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:13:5-76
+	android:name
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:13:22-73
+uses-permission#android.permission.CHANGE_WIFI_STATE
+ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:14:5-76
+	android:name
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:14:22-73
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:15:5-81
+	android:name
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:15:22-78
+service#com.bridgefy.sdk.client.NetworkJobService
+ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:19:9-23:19
+	android:exported
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:21:13-36
+	android:permission
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:22:13-69
+	android:name
+		ADDED from [com.bridgefy:android-sdk:1.0.8] /Users/dekaru/.android/build-cache/aea194c36a9578d2794f002957a0b84e5b403e3a/output/AndroidManifest.xml:20:13-69
+meta-data#android.support.VERSION
+ADDED from [com.android.support:appcompat-v7:25.3.0] /Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-v4:25.3.0] /Users/dekaru/.android/build-cache/bce754e2432cbc580e1cf246c1880761a7ddd2db/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-fragment:25.3.0] /Users/dekaru/.android/build-cache/6b150e5646d9512dd708a04aa4f5f1282ad4f2be/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-media-compat:25.3.0] /Users/dekaru/.android/build-cache/3f33dd97ff2e653d5507caba597545d96e2b7370/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-core-utils:25.3.0] /Users/dekaru/.android/build-cache/3e8e4b9ab99b435386c0eb95777eec5427d2e6d5/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:animated-vector-drawable:25.3.0] /Users/dekaru/.android/build-cache/8e9a8e35705746285ff60184800155be95072e1f/output/AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:support-vector-drawable:25.3.0] /Users/dekaru/.android/build-cache/811bf742d3e72b6d36ff938fc59d76e0322bd52d/output/AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:recyclerview-v7:25.3.0] /Users/dekaru/.android/build-cache/71cd95426bb02e6c7e5ccaad57342fe5e609076d/output/AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:support-core-ui:25.3.0] /Users/dekaru/.android/build-cache/aa1468524d3267190624c38853e3bc895cae8dda/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-compat:25.3.0] /Users/dekaru/.android/build-cache/ffa384e9ecfbaf334963191f97d29845c99e6b66/output/AndroidManifest.xml:25:5-27:34
+	android:value
+		ADDED from [com.android.support:appcompat-v7:25.3.0] /Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/AndroidManifest.xml:27:9-31
+	android:name
+		ADDED from [com.android.support:appcompat-v7:25.3.0] /Users/dekaru/.android/build-cache/01cb078711dee02f29b760188e1937c13f0fd033/output/AndroidManifest.xml:26:9-47

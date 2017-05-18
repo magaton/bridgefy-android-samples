@@ -67,7 +67,10 @@ public class DevicesActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        Bridgefy.stop();
+        if (isFinishing()) {
+            // stop bridgefy operations
+            Bridgefy.stop();
+        }
     }
 
 
@@ -89,12 +92,7 @@ public class DevicesActivity extends AppCompatActivity {
         @Override
         public void onRegistrationFailed(int errorCode, String message) {
             Log.e(TAG, "onRegistrationFailed: failed with ERROR_CODE: " + errorCode + ", MESSAGE: " + message);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(DevicesActivity.this, "Bridgefy registration did not succeed.", Toast.LENGTH_LONG).show();
-                }
-            });
+            Toast.makeText(DevicesActivity.this, "Bridgefy registration did not succeed.", Toast.LENGTH_LONG).show();
         }
     };
 
@@ -102,7 +100,6 @@ public class DevicesActivity extends AppCompatActivity {
     /**
      * BRIDGEFY WORKFLOW LISTENERS
      */
-
 
     StateListener stateListener = new StateListener() {
         @Override
@@ -115,7 +112,6 @@ public class DevicesActivity extends AppCompatActivity {
         public void onDeviceLost(Device device) {
             Log.w(TAG, "Device lost: " + device.getUserId());
         }
-
 
         @Override
         public void onStarted() {
@@ -162,7 +158,6 @@ public class DevicesActivity extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
 
         }
-
     };
 
 
@@ -176,7 +171,6 @@ public class DevicesActivity extends AppCompatActivity {
         data.put("model", Build.MODEL);
 
         // since this is a broadcast message, it's not necessary to specify a receiver
-        Message message = Bridgefy.createMessage(null, data);
         device.sendMessage(data);
 
         Log.d(TAG, "Message sent!");
@@ -199,7 +193,7 @@ public class DevicesActivity extends AppCompatActivity {
         }
     }
 
-    public class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {
+    private class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {
         // the list that holds our incoming devices
         ArrayList<String> devices;
 
@@ -222,6 +216,7 @@ public class DevicesActivity extends AppCompatActivity {
             return false;
         }
 
+        // TODO
         void removeDevice(Device device) {
             int position = devices.indexOf(device);
             if (position > -1) {

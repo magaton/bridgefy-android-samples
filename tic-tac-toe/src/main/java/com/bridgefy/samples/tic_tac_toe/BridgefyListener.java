@@ -105,22 +105,14 @@ class BridgefyListener {
             // build a TicTacToe Move object from our incoming Bridgefy Message
             Move move = Move.create(message);
 
-            // TODO save this move so we can go back to it later
+            // TODO make moves persistent
 
             // post this event via the Otto plugin so our components can update their views
             ottoBus.post(move);
 
-            // if we're available to play or if it's a move from our current match ...
-            if (MatchActivity.getMatchId() == null || !MatchActivity.getMatchId().equals(move.getMatchId())) {
-                // ... post the incoming object to our active component via the Otto plugin
+            // if it's not a Move object from our current match, create a notification
+            if (!move.getMatchId().equals(MatchActivity.getCurrentMatchId())) {
                 // TODO create a notification for the incoming move
-
-//            } else {
-//                // ... if it isn't, it means that it's an invitation, but we're already playing
-//                // TODO maybe create a shorthand method: Bridgefy.sendMessage(String receiver, HashMap content)
-//                Bridgefy.sendMessage(Bridgefy.createMessage(
-//                        message.getSenderId(),
-//                        RefuseMatch.create(move.getMatchId(), true)));
             }
         }
     };
@@ -142,7 +134,7 @@ class BridgefyListener {
         return instance.messageListener;
     }
 
-    static String getUuid() {
+    public static String getUuid() {
         return instance.uuid;
     }
 
