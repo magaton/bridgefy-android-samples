@@ -154,26 +154,26 @@ public class MainActivity extends AppCompatActivity {
      *      PLAYER ADAPTER CLASS
      */
     private class PlayersAdapter extends RecyclerView.Adapter<PlayerViewHolder> {
+
         // the list that holds our incoming players
         ArrayList<Player> players;
+
 
         PlayersAdapter() {
             players = new ArrayList<>();
         }
+
 
         @Override
         public int getItemCount() {
             return players.size();
         }
 
-        boolean addPlayer(Player player) {
+        void addPlayer(Player player) {
             if (!players.contains(player)) {
                 players.add(player);
                 notifyItemInserted(players.size() - 1);
-                return true;
             }
-
-            return false;
         }
 
         void removePlayer(String playerId) {

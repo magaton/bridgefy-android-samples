@@ -1,7 +1,5 @@
 package com.bridgefy.samples.tic_tac_toe.entities;
 
-import android.util.Log;
-
 import com.bridgefy.sdk.client.Message;
 import com.google.gson.Gson;
 
@@ -39,7 +37,6 @@ public class Player {
                                 new Gson().toJson(message.getContent().get("content")),
                                 Player.class);
         player.setUuid(message.getSenderId());
-        Log.w("Player", "Player created: " + player.toString());
         return player;
     }
 

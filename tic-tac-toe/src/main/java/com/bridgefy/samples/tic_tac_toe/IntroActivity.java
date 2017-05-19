@@ -19,15 +19,11 @@ import butterknife.OnClick;
 
 public class IntroActivity extends AppCompatActivity {
 
-    private final static String TAG = "IntroActivity";
-
     @BindView(R.id.text_username)
     public EditText txtUsername;
 
     @BindView(R.id.button_start)
     public Button buttonStart;
-
-
 
 
     @Override
