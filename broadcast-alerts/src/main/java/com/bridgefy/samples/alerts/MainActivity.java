@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         HashMap<String, Object> data = new HashMap<>();
         data.put(number, sentAlertCounter);
-        data.put(date_sent, System.currentTimeMillis());
+        data.put(date_sent, Double.parseDouble("" + System.currentTimeMillis()));
         data.put(device_name, Build.MANUFACTURER + " " + Build.MODEL);
         Message message = Bridgefy.createMessage(data);
 
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
             HashMap<String,Object> content = message.getContent();
 
-            Alert alert = new Alert(message.getSenderId(), (Integer) content.get(number), (String) content.get(device_name), (Long) content.get(date_sent));
+            Alert alert = new Alert(message.getSenderId(), (Integer) content.get(number), (String) content.get(device_name), ((Double) content.get(date_sent)).longValue());
 
             alertsData.add(alert);
 
