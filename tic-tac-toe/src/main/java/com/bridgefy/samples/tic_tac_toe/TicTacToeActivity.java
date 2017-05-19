@@ -2,6 +2,7 @@ package com.bridgefy.samples.tic_tac_toe;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TableLayout;
@@ -13,6 +14,7 @@ import butterknife.OnClick;
 
 public abstract class TicTacToeActivity extends AppCompatActivity {
 
+
     private int size;
     TableLayout mainBoard;
     TextView tv_turn;
@@ -23,6 +25,9 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
     char turn;
     char X = 'X';
     char O = 'O';
+
+    // TODO bundle this logic
+    char myTurnChar = X;
     boolean myTurn = true;
 
 
@@ -36,6 +41,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         initializeBoard();
     }
 
+    // TODO
     @OnClick(R.id.button_new_match)
     protected void newMatch() {
         Intent current = getIntent();
@@ -56,8 +62,10 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         tv_turn = (TextView) findViewById(R.id.turn);
 
         turn = X;
+        myTurnChar = X;
+        myTurn = true;
+        tv_turn.setText("Your turn");
         resetBoard(null);
-        tv_turn.setText("Turn: " + turn);
 
         for (int i = 0; i < mainBoard.getChildCount(); i++) {
             TableRow row = (TableRow) mainBoard.getChildAt(i);
@@ -78,27 +86,27 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                         board[r][c] = turn;
                         if (turn == X) {
                             tv.setText(R.string.X);
-                            turn = O;
-                        } else if (turn == O) {
+                        } else {
                             tv.setText(R.string.O);
-                            turn = X;
                         }
-
-                        // send the move
-                        sendMove(board);
 
                         // get the game status
                         if (gameStatus() == 0) {
                             tv_turn.setText("Turn: " + turn);
+
+                            // send the move
+                            sendMove(board);
+                            myTurn = false;
                         } else if (gameStatus() == -1) {
                             tv_turn.setText("Game: Draw");
                             stopMatch();
                         } else {
-                            tv_turn.setText(turn + " Loses!");
-
-                            setWinner(turn == X ? O : X);
+                            setWinner(turn);
+                            tv_turn.setText(turn + " Wins!");
                             stopMatch();
                         }
+
+                        turn = turn == X ? O : X;
                     } else {
                         tv_turn.setText("Please choose a Cell Which is not already Occupied");
                     }
@@ -119,6 +127,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
             for (int j = 0; j < row.getChildCount(); j++) {
                 TextView tv = (TextView) row.getChildAt(j);
                 tv.setOnClickListener(null);
+                tv.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.gray));
             }
         }
     }
@@ -144,11 +153,9 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                 }
             }
         }
-
-        tv_turn.setText("Turn: " + turn);
     }
 
-    protected int gameStatus() {
+    private int gameStatus() {
         //0 Continue
         //1 X Wins
         //2 O Wins
@@ -182,7 +189,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         else return 0;
     }
 
-    protected boolean check_Diagonal(char player) {
+    private boolean check_Diagonal(char player) {
         int count_Equal1 = 0, count_Equal2 = 0;
         for (int i = 0; i < size; i++)
             if (board[i][i] == player)
@@ -194,7 +201,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         return (count_Equal1 == size || count_Equal2 == size);
     }
 
-    protected boolean check_Row_Equality(int r, char player) {
+    private boolean check_Row_Equality(int r, char player) {
         int count_Equal = 0;
         for (int i = 0; i < size; i++) {
             if (board[r][i] == player)
@@ -204,7 +211,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         return (count_Equal == size);
     }
 
-    protected boolean check_Column_Equality(int c, char player) {
+    private boolean check_Column_Equality(int c, char player) {
         int count_Equal = 0;
         for (int i = 0; i < size; i++) {
             if (board[i][c] == player)

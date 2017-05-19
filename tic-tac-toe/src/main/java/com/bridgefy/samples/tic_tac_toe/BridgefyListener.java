@@ -60,7 +60,7 @@ class BridgefyListener {
         @Override
         public void onDeviceLost(Device device) {
             // post this event via the Otto plugin so our components can update their views
-            ottoBus.post(device);
+//            ottoBus.post(device);
         }
 
         @Override

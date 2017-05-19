@@ -66,7 +66,6 @@ public class MatchActivity extends TicTacToeActivity {
 
     @Override
     void sendMove(char[][] board) {
-        myTurn = false;
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
@@ -93,19 +92,27 @@ public class MatchActivity extends TicTacToeActivity {
                 Log.d(TAG, "Move received for matchId: " + move.getMatchId());
                 Log.d(TAG, "... " + move.toString());
 
-                // if the sequence is an odd number, it means that the other player started the match
-                if (move.getSequence()%2 != 0) {
-                    turn = O;
-                    participants.put(O, BridgefyListener.getUuid());
-                    participants.put(X, player.getUuid());
-                } else
-                    turn = X;
+                if (move.getWinner() == null) {
+                    // if the other player started the match, switch the symbols
+                    if (move.getSequence() == 1) {
+                        turn = O;
+                        myTurnChar = O;
+                        participants.put(O, BridgefyListener.getUuid());
+                        participants.put(X, player.getUuid());
+                    }
 
-                // move the board
-                myTurn = true;
+                    // move the board
+                    myTurn = true;
+                    turn = myTurnChar;
+
+                    tv_turn.setText("Your turn");
+                } else {
+                    tv_turn.setText(turn + " Wins!");
+                    stopMatch();
+                }
+
+                // set the board to its current status and update the sequence
                 resetBoard(move.getBoard());
-
-                // update the sequence value
                 this.sequence = move.getSequence();
             } else {
                 Log.w(TAG, "Dumping Move object with an expired seq.");
@@ -131,12 +138,12 @@ public class MatchActivity extends TicTacToeActivity {
     }
 
     private String generateMatchId(String u1, String u2) {
-        // TODO matches are currently fixed
+        // TODO matches are currently fixed, however they should have a random UUID as identifier
 //        return UUID.randomUUID().toString();
         if (u1.charAt(0) > u2.charAt(0)) {
-            return u1.substring(0, 5) + "-" + u2.substring(0, 5) + System.currentTimeMillis()/1000;
+            return u1.substring(0, 5) + "-" + u2.substring(0, 5);
         } else {
-            return u2.substring(0, 5) + "-" + u1.substring(0, 5) + System.currentTimeMillis()/1000;
+            return u2.substring(0, 5) + "-" + u1.substring(0, 5);
         }
     }
 }

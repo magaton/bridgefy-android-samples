@@ -57,6 +57,10 @@ public class Move {
         this.winner = winner;
     }
 
+    public String getWinner() {
+        return winner;
+    }
+
     public String getMatchId() {
         return mid;
     }
