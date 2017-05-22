@@ -11,7 +11,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".PeerListActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -21,15 +21,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PeerDetailActivity"
+            android:name=".ChatActivity"
             android:label="@string/title_peer_detail"
-            android:parentActivityName=".PeerListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:windowSoftInputMode="adjustResize|adjustPan"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.bridgefy.samples.chat.PeerListActivity" />
+                android:value="com.bridgefy.samples.chat.MainActivity" />
         </activity>
 
+        <!-- Bridgefy SDK key -->
         <meta-data
             android:name="com.bridgefy.sdk.API_KEY"
             android:value="254540ef-f130-463c-b13d-e2d2adcb8f3a" />

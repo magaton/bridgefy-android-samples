@@ -31,15 +31,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class PeerListActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private String TAG = "CHAT";
 
-    public static final String INTENT_EXTRA_PEER    = "message";
+    public static final String INTENT_EXTRA_PEER    = "peer";
     public static final String INTENT_EXTRA_MESSAGE = "message";
-
-    // TODO make it work in tablets
-    private boolean mTwoPane;
+    public static final String INTENT_BROADCAST_MSG = "broadcast";
 
     PeersRecyclerViewAdapter peersAdapter =
             new PeersRecyclerViewAdapter(new ArrayList<Peer>());
@@ -48,7 +46,7 @@ public class PeerListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_peer_list);
+        setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,21 +55,13 @@ public class PeerListActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.peer_list);
         recyclerView.setAdapter(peersAdapter);
 
-        if (findViewById(R.id.peer_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
-
         Bridgefy.initialize(getApplicationContext(), new RegistrationListener() {
             @Override
             public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
                 super.onRegistrationSuccessful(bridgefyClient);
 
                 // Start Bridgefy
-                Bridgefy.start(messageListener, stateListener);
+                startBridgefy();
             }
 
             @Override
@@ -81,14 +71,23 @@ public class PeerListActivity extends AppCompatActivity {
         });
     }
 
+    private void startBridgefy() {
+        Bridgefy.start(messageListener, stateListener);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if (isFinishing()) {
+        if (isFinishing())
             Bridgefy.stop();
-        }
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
 
     private MessageListener messageListener = new MessageListener() {
         @Override
@@ -103,14 +102,16 @@ public class PeerListActivity extends AppCompatActivity {
                 String incomingMessage = (String) message.getContent().get("text");
                 LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(
                         new Intent(message.getSenderId())
-                                .putExtra(INTENT_EXTRA_MESSAGE, incomingMessage)
-                );
+                                .putExtra(INTENT_EXTRA_MESSAGE, incomingMessage));
             }
         }
 
         @Override
         public void onBroadcastMessageReceived(Message message) {
-            super.onBroadcastMessageReceived(message);
+            String incomingMessage = (String) message.getContent().get("text");
+            LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(
+                    new Intent(INTENT_BROADCAST_MSG)
+                            .putExtra(INTENT_EXTRA_MESSAGE, incomingMessage));
         }
     };
 
@@ -125,7 +126,7 @@ public class PeerListActivity extends AppCompatActivity {
 
         @Override
         public void onDeviceLost(Device peer) {
-            peersAdapter.removePeer(peer.getUserId());
+//            peersAdapter.removePeer(peer.getUserId());
         }
 
         @Override
@@ -133,7 +134,7 @@ public class PeerListActivity extends AppCompatActivity {
             Log.e(TAG, "onStartError: " + message);
 
             if (errorCode == StateListener.INSUFFICIENT_PERMISSIONS) {
-                ActivityCompat.requestPermissions(PeerListActivity.this,
+                ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
             }
         }
@@ -145,8 +146,10 @@ public class PeerListActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Bridgefy has already been initialized by this point
-            Bridgefy.start(messageListener, stateListener);
+
+            // Start Bridgefy
+            startBridgefy();
+
         } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
             Toast.makeText(this, "Location permissions needed to start peers discovery.", Toast.LENGTH_SHORT).show();
             finish();
@@ -174,14 +177,14 @@ public class PeerListActivity extends AppCompatActivity {
             }
         }
 
-        void removePeer(String peerId) {
-            for (int i = 0; i <= peers.size(); i++) {
-                if (peers.get(i).getUuid().equals(peerId)) {
-                    peers.remove(i);
-                    notifyItemRemoved(i);
-                }
-            }
-        }
+//        void removePeer(String peerId) {
+//            for (int i = 0; i <= peers.size(); i++) {
+//                if (peers.get(i).getUuid().equals(peerId)) {
+//                    peers.remove(i);
+//                    notifyItemRemoved(i);
+//                }
+//            }
+//        }
         
         @Override
         public PeerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -196,36 +199,24 @@ public class PeerListActivity extends AppCompatActivity {
         }
 
         class PeerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            final TextView mIdView;
+
             final TextView mContentView;
             Peer peer;
 
             PeerViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                mContentView = (TextView) view.findViewById(R.id.peerName);
                 view.setOnClickListener(this);
             }
 
             void setPeer(Peer peer) {
                 this.peer = peer;
-                this.mIdView.setText(peer.getDeviceName());
-                this.mContentView.setText(peer.getUuid());
+                this.mContentView.setText(peer.getDeviceName());
             }
 
             public void onClick(View v) {
-                if (mTwoPane) {
-                    Bundle arguments = new Bundle();
-                    arguments.putString(INTENT_EXTRA_PEER, peer.toString());
-                    PeerDetailFragment fragment = new PeerDetailFragment();
-                    fragment.setArguments(arguments);
-                    getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.peer_detail_container, fragment)
-                            .commit();
-                } else {
-                    startActivity(new Intent(getBaseContext(), PeerDetailActivity.class)
-                            .putExtra(INTENT_EXTRA_PEER, peer.toString()));
-                }
+                startActivity(new Intent(getBaseContext(), ChatActivity.class)
+                        .putExtra(INTENT_EXTRA_PEER, peer.toString()));
             }
         }
     }
