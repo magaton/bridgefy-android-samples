@@ -60,7 +60,8 @@ compile 'com.bridgefy:android-sdk:1.0.+'
 The Bridgefy SDK needs only a call to the static **initialize()** method in order to create all required objects and to be ready to start operations.
 
 ```java
-Bridgefy.initialize(Context context, String apiKey, RegistrationListener registrationListener);
+        //Always use the Application context to avoid leaks
+        Bridgefy.initialize(getApplicationContext(), XXXXXXXX-XXXX-XXXX-XXXX-XXXX ,registrationListener);
 ```
 Alternatively, you can provide a null argument instead of the **apiKey** if you included it in your **AndroidManifest.xml** file.
 
