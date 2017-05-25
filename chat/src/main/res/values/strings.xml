@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Chat</string>
-    <string name="title_peer_detail">Peer Detail</string>
+    <string name="placeholder">Write a message</string>
+    <string name="broadcast">Broadcast</string>
+    <string name="registration_error">A registration occurred. Make sure you\'re online the first time
+    that you install this sample app</string>
 </resources>
