@@ -1,6 +1,7 @@
 package com.bridgefy.samples.tic_tac_toe;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -11,16 +12,14 @@ import com.bridgefy.sdk.client.Bridgefy;
 import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class MatchActivity extends TicTacToeActivity {
 
     private static final String TAG = "MatchActivity";
 
     // a globaly available variable that identifies the current match
-    public static String currentMatchId;
-
-    // a unique string identifier for this match
-    public String matchId;
+    public static String matchId;
 
     // a Player object representing our rival
     private Player player;
@@ -38,19 +37,23 @@ public class MatchActivity extends TicTacToeActivity {
         // get our player object and set a matchId
         player = Player.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_PLAYER));
 
-        // generate our permanent matchId
-        matchId = generateMatchId(BridgefyListener.getUuid(), player.getUuid());
-
-        // register this activity on the Otto plugin (not a part of the Bridgefy framework)
-        BridgefyListener.getOttoBus().register(this);
-
         // create our participants object for the Move message
         participants = new HashMap<>();
         participants.put(X, BridgefyListener.getUuid());
         participants.put(O, player.getUuid());
 
-        Log.d(TAG, "Starting Match with: " + player.getNick());
-        Log.d(TAG, "            matchId: " + matchId);
+        // check if this Match was started with a corresponding matchId
+        Move move = Move.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_MOVE));
+        if (move != null)
+            onMoveReceived(move);
+
+        // Enable the Up button
+        ActionBar ab = getSupportActionBar();
+        if (ab != null)
+            ab.setTitle(player.getNick());
+
+        // register this activity on the Otto plugin (not a part of the Bridgefy framework)
+        BridgefyListener.getOttoBus().register(this);
     }
 
     @Override
@@ -66,16 +69,28 @@ public class MatchActivity extends TicTacToeActivity {
 
     @Override
     void sendMove(char[][] board) {
+        if (matchId == null) {
+            // generate our permanent matchId
+            matchId = generateMatchId();
+            Log.d(TAG, "Starting Match with: " + player.getNick());
+            Log.d(TAG, "            matchId: " + matchId);
+        }
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
+
+        // preserve the Move locally and send it as a message
+        MainActivity.onMoveReceived(move);
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
     }
 
     @Override
-    void setWinner(char w) {
+    void sendWinner(char w) {
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
         move.setWinner(participants.get(w));
+
+        // preserve the Move locally and send it as a message
+        MainActivity.onMoveReceived(move);
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
     }
 
@@ -86,15 +101,22 @@ public class MatchActivity extends TicTacToeActivity {
      */
     @Subscribe
     public void onMoveReceived(Move move) {
-        // work only with Move objects from our current match
-        if (move.getMatchId().equals(matchId)) {
+        // work only with Move objects from our current match or if a match hasn't been set yet
+        if (move.getMatchId().equals(matchId) || matchId == null) {
             if (move.getSequence() > sequence) {
-                Log.d(TAG, "Move received for matchId: " + move.getMatchId());
-                Log.d(TAG, "... " + move.toString());
+                // get a reference to out matchId
+                if (matchId == null) {
+                    matchId = move.getMatchId();
+                    Log.d(TAG, "Starting Match with: " + player.getNick());
+                    Log.d(TAG, "            matchId: " + matchId);
+                } else {
+                    Log.d(TAG, "Move received for matchId: " + move.getMatchId());
+                    Log.d(TAG, "... " + move.toString());
+                }
 
                 if (move.getWinner() == null) {
                     // if the other player started the match, switch the symbols
-                    if (move.getSequence() == 1) {
+                    if (move.getSequence()%2 == 1) {
                         turn = O;
                         myTurnChar = O;
                         participants.put(O, BridgefyListener.getUuid());
@@ -134,16 +156,10 @@ public class MatchActivity extends TicTacToeActivity {
 
 
     public static String getCurrentMatchId() {
-        return currentMatchId;
+        return matchId;
     }
 
-    private String generateMatchId(String u1, String u2) {
-        // TODO matches are currently fixed, however they should have a random UUID as identifier
-//        return UUID.randomUUID().toString();
-        if (u1.charAt(0) > u2.charAt(0)) {
-            return u1.substring(0, 5) + "-" + u2.substring(0, 5);
-        } else {
-            return u2.substring(0, 5) + "-" + u1.substring(0, 5);
-        }
+    private String generateMatchId() {
+        return UUID.randomUUID().toString().substring(0, 5);
     }
 }

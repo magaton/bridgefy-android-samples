@@ -16,13 +16,12 @@ public class Player {
 
     private String nick;
     private String uuid;
-    private int    status;
+    private int    status = STATUS_FREE;
 
 
-    public Player(String uuid, String nick, int status) {
+    public Player(String uuid, String nick) {
         this.uuid = uuid;
         this.nick = nick;
-        this.status = status;
     }
 
 
@@ -47,10 +46,6 @@ public class Player {
 
     public String getNick() {
         return nick;
-    }
-
-    public int getStatus() {
-        return status;
     }
 
     public String getUuid() {

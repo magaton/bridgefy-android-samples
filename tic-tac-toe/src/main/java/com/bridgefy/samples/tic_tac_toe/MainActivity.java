@@ -3,6 +3,7 @@ package com.bridgefy.samples.tic_tac_toe;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bridgefy.samples.tic_tac_toe.entities.MatchPlayerHolder;
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
 import com.bridgefy.sdk.client.Bridgefy;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.players_recycler_view)
     RecyclerView playersRecyclerView;
-    PlayersAdapter playersAdapter;
+    static PlayersAdapter playersAdapter;
 
 
     @Override
@@ -104,15 +106,16 @@ public class MainActivity extends AppCompatActivity {
     public void onPlayerLost(Device player) {
         // The Player.uuid field is created with the first 5 digits of the Device.uuid field
         Log.w(TAG, "Player lost: " + player.getUserId());
-        playersAdapter.removePlayer(player.getUserId());
+//        playersAdapter.removePlayer(player.getUserId());
     }
 
     @Subscribe
-    public void onMoveReceived(Move move) {
+    public static void onMoveReceived(Move move) {
         Log.d(TAG, "Move received for matchId: " + move.getMatchId());
         Log.d(TAG, "... " + move.toString());
 
-        // TODO show the Match if it hasn't been shown
+        // Add the Move to our corresponding match
+        playersAdapter.addMove(move);
     }
 
 
@@ -155,35 +158,78 @@ public class MainActivity extends AppCompatActivity {
      */
     private class PlayersAdapter extends RecyclerView.Adapter<PlayerViewHolder> {
 
-        // the list that holds our incoming players
-        ArrayList<Player> players;
-
+        // the list that holds our incoming players and their match id fields
+        ArrayList<MatchPlayerHolder> matchPlayers;
 
         PlayersAdapter() {
-            players = new ArrayList<>();
+            matchPlayers = new ArrayList<>();
         }
 
 
         @Override
         public int getItemCount() {
-            return players.size();
+            return matchPlayers.size();
         }
 
         void addPlayer(Player player) {
-            if (!players.contains(player)) {
-                players.add(player);
-                notifyItemInserted(players.size() - 1);
+            MatchPlayerHolder mph = new MatchPlayerHolder(player);
+            if (!matchPlayers.contains(mph)) {
+                matchPlayers.add(mph);
+                notifyItemInserted(matchPlayers.size() - 1);
             }
         }
 
-        void removePlayer(String playerId) {
-            for (int i = 0; i <= players.size(); i++) {
-                if (players.get(i).getUuid().equals(playerId)) {
-                    players.remove(i);
-                    notifyItemRemoved(i);
+        void addMove(Move move) {
+            // find and replace the Player row if it exists
+            int otherPlayerPosition = getPlayerPosition(move.getOtherUuid());
+            if (otherPlayerPosition > -1) {
+                Log.i(TAG, "Updating from Player to Move");
+                matchPlayers.get(otherPlayerPosition).setMove(move);
+                notifyItemChanged(otherPlayerPosition);
+
+            } else {
+                // otherwise, look for an existing Move object
+                int otherMovePosition = getMovePosition(move.getMatchId());
+                if (otherMovePosition > -1) {
+                    Log.i(TAG, "Updating Move");
+                    matchPlayers.get(otherMovePosition).setMove(move);
+                    notifyItemChanged(otherMovePosition);
+
+                } else {
+                    // if nothing was found, add the Move as a new MatchPlayer entity
+                    Log.i(TAG, "Adding Move");
+                    matchPlayers.add(new MatchPlayerHolder(move));
+                    notifyItemInserted(matchPlayers.size() - 1);
                 }
             }
         }
+
+        int getPlayerPosition(String uuid) {
+            for (int i = 0; i <= matchPlayers.size(); i++) {
+                if (matchPlayers.get(i).getPlayer().getUuid().equals(uuid)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        int getMovePosition(String matchId) {
+            for (int i = 0; i <= matchPlayers.size(); i++) {
+                if (matchPlayers.get(i).getMove().getMatchId().equals(matchId)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+//        void removePlayer(String playerId) {
+//            for (int i = 0; i <= matchPlayers.size(); i++) {
+//                if (matchPlayers.get(i).second.getUuid().equals(playerId)) {
+//                    matchPlayers.remove(i);
+//                    notifyItemRemoved(i);
+//                }
+//            }
+//        }
 
         @Override
         public PlayerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -194,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(PlayerViewHolder playerViewHolder, int position) {
-            playerViewHolder.setPlayer(players.get(position));
+            playerViewHolder.setMatchPlayerHolder(matchPlayers.get(position));
         }
     }
 
@@ -202,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         @BindView(R.id.txt_player)
         TextView playerView;
 
-        Player player;
+        MatchPlayerHolder matchPlayerHolder;
 
         PlayerViewHolder(View view) {
             super(view);
@@ -210,16 +256,22 @@ public class MainActivity extends AppCompatActivity {
             view.setOnClickListener(this);
         }
 
-        void setPlayer(Player player) {
-            this.player = player;
-            playerView.setText(player.getNick());
+        void setMatchPlayerHolder(MatchPlayerHolder mph) {
+            this.matchPlayerHolder = mph;
+            playerView.setText(mph.getPlayer().getNick());
+
+            // A bold style marks player with ongoing matches
+            if (mph.getMatchId() != null) {
+                playerView.setTypeface(null, Typeface.BOLD);
+            }
         }
 
         @Override
         public void onClick(View v) {
             startActivity(
                     new Intent(getBaseContext(), MatchActivity.class)
-                            .putExtra(Constants.INTENT_EXTRA_PLAYER, player.toString()));
+                            .putExtra(Constants.INTENT_EXTRA_PLAYER, matchPlayerHolder.getPlayer().toString())
+                            .putExtra(Constants.INTENT_EXTRA_MOVE,  matchPlayerHolder.getMoveString()));
         }
     }
 }

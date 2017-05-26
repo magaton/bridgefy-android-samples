@@ -1,5 +1,7 @@
 package com.bridgefy.samples.tic_tac_toe.entities;
 
+import com.bridgefy.samples.tic_tac_toe.BridgefyListener;
+import com.bridgefy.samples.tic_tac_toe.TicTacToeActivity;
 import com.bridgefy.sdk.client.Message;
 import com.google.gson.Gson;
 
@@ -15,7 +17,7 @@ public class Move {
     HashMap<Character, String> participants;
     char[][] board = new char[3][3];
     int seq;
-    String winner;  // TODO
+    String winner;
 
 
     public Move(String mid, int seq, char[][] board) {
@@ -36,6 +38,28 @@ public class Move {
                 Move.class);
     }
 
+    public static Move create(String json) {
+        return new Gson().fromJson(json, Move.class);
+    }
+
+    /**
+     * @return The UUID String of the user playing against the current user. Null if myMatch() is false.
+     */
+    public String getOtherUuid() {
+        if (myMatch())
+            return BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.O)) ?
+                    participants.get(TicTacToeActivity.X) : participants.get(TicTacToeActivity.O);
+        else
+            return null;
+    }
+
+    /**
+     * @return True if this Move belongs to a Match that belongs to the current user
+     */
+    public boolean myMatch() {
+        return (BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.O)) ||
+                BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.X)));
+    }
 
     public void setParticipants(HashMap<Character, String> participants) {
         this.participants = participants;

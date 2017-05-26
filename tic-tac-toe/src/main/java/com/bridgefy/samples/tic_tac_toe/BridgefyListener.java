@@ -16,7 +16,7 @@ import com.squareup.otto.Bus;
 /**
  * @author dekaru on 5/10/17.
  */
-class BridgefyListener {
+public class BridgefyListener {
 
     private static final String TAG = "BridgefyListener";
 
@@ -53,8 +53,7 @@ class BridgefyListener {
         public void onDeviceConnected(Device device, Session session) {
             // we present ourselves to the user
             device.sendMessage(
-                    new Player(uuid, username, Player.STATUS_FREE)
-                            .toHashMap());
+                    new Player(uuid, username).toHashMap());
         }
 
         @Override
@@ -111,9 +110,9 @@ class BridgefyListener {
             ottoBus.post(move);
 
             // if it's not a Move object from our current match, create a notification
-            if (!move.getMatchId().equals(MatchActivity.getCurrentMatchId())) {
-                // TODO create a notification for the incoming move
-            }
+//            if (!move.getMatchId().equals(MatchActivity.getCurrentMatchId())) {
+//                // TODO create a notification for the incoming move
+//            }
         }
     };
 

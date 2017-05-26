@@ -23,8 +23,8 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
 
     // first turn is 'X'
     char turn;
-    char X = 'X';
-    char O = 'O';
+    public static char X = 'X';
+    public static char O = 'O';
 
     // TODO bundle this logic
     char myTurnChar = X;
@@ -37,7 +37,6 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_board);
         ButterKnife.bind(this);
 
-        // TODO receive a seed for the board representing the board status (once boards are persisted)
         initializeBoard();
     }
 
@@ -52,7 +51,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
 
     abstract void sendMove(char[][] board);
 
-    abstract void setWinner(char w);
+    abstract void sendWinner(char w);
 
 
     protected void initializeBoard() {
@@ -92,6 +91,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
 
                         // get the game status
                         if (gameStatus() == 0) {
+                            turn = turn == X ? O : X;
                             tv_turn.setText("Turn: " + turn);
 
                             // send the move
@@ -101,12 +101,10 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                             tv_turn.setText("Game: Draw");
                             stopMatch();
                         } else {
-                            setWinner(turn);
+                            sendWinner(turn);
                             tv_turn.setText(turn + " Wins!");
                             stopMatch();
                         }
-
-                        turn = turn == X ? O : X;
                     } else {
                         tv_turn.setText("Please choose a Cell Which is not already Occupied");
                     }
