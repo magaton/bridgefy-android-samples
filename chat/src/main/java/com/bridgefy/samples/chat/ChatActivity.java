@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.bridgefy.samples.chat.entities.Message;
+import com.bridgefy.samples.chat.entities.Peer;
 import com.bridgefy.sdk.client.BFEngineProfile;
 import com.bridgefy.sdk.client.Bridgefy;
 
@@ -113,7 +114,7 @@ public class ChatActivity extends AppCompatActivity {
             if (conversationId.equals(BROADCAST_CHAT)) {
                 // we put extra information in broadcast packets since they won't be bound to a session
                 content.put("device_name", Build.MANUFACTURER + " " + Build.MODEL);
-                content.put("device_type", MainActivity.DEVICE_ANDROID);
+                content.put("device_type", Peer.DeviceType.ANDROID.ordinal());
                 Bridgefy.sendBroadcastMessage(
                         Bridgefy.createMessage(content),
                         BFEngineProfile.BFConfigProfileLongReach);

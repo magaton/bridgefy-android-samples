@@ -11,6 +11,7 @@ import com.bridgefy.sdk.client.Message;
 import com.bridgefy.sdk.client.MessageListener;
 import com.bridgefy.sdk.client.Session;
 import com.bridgefy.sdk.client.StateListener;
+import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 
 /**
@@ -99,10 +100,12 @@ public class BridgefyListener {
 
         @Override
         public void onBroadcastMessageReceived(Message message) {
+            Log.d(TAG, "BroadcastMessageReceived: " + new Gson().toJson(message.getContent().toString()));
+
             // build a TicTacToe Move object from our incoming Bridgefy Message
             Event.EventType eventType = extractType(message);
             switch (eventType) {
-                case MOVE_EVENT: {
+                case MOVE_EVENT:
                     Move move = Move.create(message);
                     // log
                     Log.d(TAG, "Move received for matchId: " + move.getMatchId());
@@ -110,20 +113,22 @@ public class BridgefyListener {
 
                     // post this event via the Otto plugin so our components can update their views
                     ottoBus.post(move);
-                } break;
+                    break;
+
                 case REFUSE_MATCH:
                     // recreate the RefuseMatch object from the incoming message
                     // post the found object to our activities via the Otto plugin
                     ottoBus.post(RefuseMatch.create(message));
                     break;
+
                 case AVAILABLE:
                     Log.d(TAG, "AVAILABLE event not implemented yet");
                     break;
+
                 default:
                     Log.d(TAG, "Event not recognized received.");
                     break;
             }
-
 
             // TODO make moves persistent
 

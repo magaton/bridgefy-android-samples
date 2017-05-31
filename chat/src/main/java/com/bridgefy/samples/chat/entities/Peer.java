@@ -11,6 +11,14 @@ public class Peer {
     private String  device_name;
     private String  uuid;
     private boolean isNearby;
+    private DeviceType deviceType;
+
+    public enum DeviceType {
+        UNDEFINED,
+        ANDROID,
+        IPHONE
+    }
+
 
     public Peer(String uuid, String device_name) {
         this.uuid = uuid;
@@ -26,6 +34,14 @@ public class Peer {
         return uuid;
     }
 
+    public DeviceType getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(DeviceType deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public boolean isNearby() {
         return isNearby;
     }
@@ -33,6 +49,7 @@ public class Peer {
     public void setNearby(boolean nearby) {
         isNearby = nearby;
     }
+
 
     public static Peer create(String json) {
         return new Gson().fromJson(json, Peer.class);

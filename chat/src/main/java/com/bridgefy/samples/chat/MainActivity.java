@@ -44,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
     static final String INTENT_EXTRA_MSG  = "message";
     static final String BROADCAST_CHAT    = "Broadcast";
 
-    final static int DEVICE_ANDROID = 0;
-    final static int DEVICE_IPHONE  = 1;
-
     PeersRecyclerViewAdapter peersAdapter =
             new PeersRecyclerViewAdapter(new ArrayList<Peer>());
 
@@ -128,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 Peer peer = new Peer(message.getSenderId(),
                         (String) message.getContent().get("device_name"));
                 peer.setNearby(true);
+                peer.setDeviceType(extractType(message));
                 peersAdapter.addPeer(peer);
 
             // any other direct message should be treated as such
@@ -145,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             // the incoming broadcast message, so device information is included in this packet
             String incomingMsg = (String) message.getContent().get("text");
             String deviceName  = (String) message.getContent().get("device_name");
-            int    deviceType  = (int) message.getContent().get("device_type");
+            Peer.DeviceType deviceType = extractType(message);
 
             LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(
                     new Intent(BROADCAST_CHAT)
@@ -155,12 +153,24 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private Peer.DeviceType extractType(Message message) {
+        int eventOrdinal;
+        Object eventObj = message.getContent().get("device_type");
+        if (eventObj instanceof Double) {
+            eventOrdinal = ((Double) eventObj).intValue();
+        } else {
+            eventOrdinal = (Integer) eventObj;
+        }
+        return Peer.DeviceType.values()[eventOrdinal];
+    }
+
     StateListener stateListener = new StateListener() {
         @Override
         public void onDeviceConnected(final Device device, Session session) {
             // send our information to the Device
             HashMap<String, Object> map = new HashMap<>();
             map.put("device_name", Build.MANUFACTURER + " " + Build.MODEL);
+            map.put("device_type", Peer.DeviceType.ANDROID.ordinal());
             device.sendMessage(map);
         }
 
@@ -268,7 +278,16 @@ public class MainActivity extends AppCompatActivity {
 
             void setPeer(Peer peer) {
                 this.peer = peer;
-                this.mContentView.setText(peer.getDeviceName());
+
+                switch (peer.getDeviceType()) {
+                    case ANDROID:
+                        this.mContentView.setText(peer.getDeviceName() + " (android)");
+                        break;
+
+                    case IPHONE:
+                        this.mContentView.setText(peer.getDeviceName() + " (iPhone)");
+                        break;
+                }
 
                 if (peer.isNearby()) {
                     this.mContentView.setTextColor(Color.BLACK);
