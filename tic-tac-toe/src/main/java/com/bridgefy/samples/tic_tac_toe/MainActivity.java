@@ -111,9 +111,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Subscribe
     public static void onMoveReceived(Move move) {
-        Log.d(TAG, "Move received for matchId: " + move.getMatchId());
-        Log.d(TAG, "... " + move.toString());
-
         // Add the Move to our corresponding match
         playersAdapter.addMove(move);
     }

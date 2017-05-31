@@ -109,10 +109,14 @@ public class BridgefyListener {
             // build a TicTacToe Move object from our incoming Bridgefy Message
             Move move = Move.create(message);
 
-            // TODO make moves persistent
+            // log
+            Log.d(TAG, "Move received for matchId: " + move.getMatchId());
+            Log.d(TAG, "... " + move.toString());
 
             // post this event via the Otto plugin so our components can update their views
             ottoBus.post(move);
+
+            // TODO make moves persistent
 
             // if it's not a Move object from our current match, create a notification
 //            if (!move.getMatchId().equals(MatchActivity.getCurrentMatchId())) {
