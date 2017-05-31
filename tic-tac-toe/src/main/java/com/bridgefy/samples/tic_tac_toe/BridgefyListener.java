@@ -81,14 +81,7 @@ public class BridgefyListener {
         @Override
         public void onMessageReceived(Message message) {
             // identify the type of incoming event
-            int eventOrdinal;
-            Object eventObj = message.getContent().get("event");
-            if (eventObj instanceof Double) {
-                eventOrdinal = ((Double) eventObj).intValue();
-            } else {
-                eventOrdinal = (Integer) eventObj;
-            }
-            Event.EventType eventType = Event.EventType.values()[eventOrdinal];
+            Event.EventType eventType = extractType(message);
             switch (eventType) {
                 case FIRST_MESSAGE:
                     // recreate the Player object from the incoming message
@@ -107,14 +100,30 @@ public class BridgefyListener {
         @Override
         public void onBroadcastMessageReceived(Message message) {
             // build a TicTacToe Move object from our incoming Bridgefy Message
-            Move move = Move.create(message);
+            Event.EventType eventType = extractType(message);
+            switch (eventType) {
+                case MOVE_EVENT: {
+                    Move move = Move.create(message);
+                    // log
+                    Log.d(TAG, "Move received for matchId: " + move.getMatchId());
+                    Log.d(TAG, "... " + move.toString());
 
-            // log
-            Log.d(TAG, "Move received for matchId: " + move.getMatchId());
-            Log.d(TAG, "... " + move.toString());
+                    // post this event via the Otto plugin so our components can update their views
+                    ottoBus.post(move);
+                } break;
+                case REFUSE_MATCH:
+                    // recreate the RefuseMatch object from the incoming message
+                    // post the found object to our activities via the Otto plugin
+                    ottoBus.post(RefuseMatch.create(message));
+                    break;
+                case AVAILABLE:
+                    Log.d(TAG, "AVAILABLE event not implemented yet");
+                    break;
+                default:
+                    Log.d(TAG, "Event not recognized received.");
+                    break;
+            }
 
-            // post this event via the Otto plugin so our components can update their views
-            ottoBus.post(move);
 
             // TODO make moves persistent
 
@@ -122,6 +131,17 @@ public class BridgefyListener {
 //            if (!move.getMatchId().equals(MatchActivity.getCurrentMatchId())) {
 //                // TODO create a notification for the incoming move
 //            }
+        }
+
+        private Event.EventType extractType(Message message) {
+            int eventOrdinal;
+            Object eventObj = message.getContent().get("event");
+            if (eventObj instanceof Double) {
+                eventOrdinal = ((Double) eventObj).intValue();
+            } else {
+                eventOrdinal = (Integer) eventObj;
+            }
+            return Event.EventType.values()[eventOrdinal];
         }
     };
 
