@@ -8,8 +8,9 @@ import com.google.gson.Gson;
 
 public class Peer {
 
-    private String device_name;
-    private String uuid;
+    private String  device_name;
+    private String  uuid;
+    private boolean isNearby;
 
     public Peer(String uuid, String device_name) {
         this.uuid = uuid;
@@ -25,10 +26,13 @@ public class Peer {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public boolean isNearby() {
+        return isNearby;
     }
 
+    public void setNearby(boolean nearby) {
+        isNearby = nearby;
+    }
 
     public static Peer create(String json) {
         return new Gson().fromJson(json, Peer.class);

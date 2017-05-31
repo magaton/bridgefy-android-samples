@@ -1,16 +1,16 @@
 package com.bridgefy.samples.tic_tac_toe;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public abstract class TicTacToeActivity extends AppCompatActivity {
 
@@ -19,7 +19,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
     TableLayout mainBoard;
     TextView tv_turn;
 
-    char[][] board;
+    int[][] board;
 
     // first turn is 'X'
     char turn;
@@ -29,6 +29,10 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
     // TODO bundle this logic
     char myTurnChar = X;
     boolean myTurn = true;
+    boolean matchStopped = false;
+
+    @BindView(R.id.button_new_match)
+    Button btnNewMatch;
 
 
     @Override
@@ -37,33 +41,32 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_board);
         ButterKnife.bind(this);
 
+        initializeTurn();
         initializeBoard();
     }
 
-    // TODO
-    @OnClick(R.id.button_new_match)
-    protected void newMatch() {
-        Intent current = getIntent();
-        finish();
-        startActivity(current);
-    }
+    abstract void sendMove(int[][] board);
+
+    abstract void sendWinner();
 
 
-    abstract void sendMove(char[][] board);
-
-    abstract void sendWinner(char w);
-
-
-    protected void initializeBoard() {
-        size = 3;
-        board = new char[size][size];
-        mainBoard = (TableLayout) findViewById(R.id.mainBoard);
-        tv_turn = (TextView) findViewById(R.id.turn);
-
+    protected void initializeTurn() {
         turn = X;
         myTurnChar = X;
         myTurn = true;
-        tv_turn.setText("Your turn");
+    }
+
+    protected void initializeBoard() {
+        size = 3;
+        board = new int[size][size];
+        mainBoard = (TableLayout) findViewById(R.id.mainBoard);
+        tv_turn = (TextView) findViewById(R.id.turn);
+
+        if (myTurn)
+            tv_turn.setText("Your turn");
+        else
+            tv_turn.setText("Turn: " + turn);
+
         resetBoard(null);
 
         for (int i = 0; i < mainBoard.getChildCount(); i++) {
@@ -71,6 +74,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
             for (int j = 0; j < row.getChildCount(); j++) {
                 TextView tv = (TextView) row.getChildAt(j);
                 tv.setOnClickListener(MoveListener(i, j, tv));
+                tv.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.black));
             }
         }
     }
@@ -89,21 +93,20 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                             tv.setText(R.string.O);
                         }
 
+                        // update the turn
+                        turn = turn == X ? O : X;
+                        myTurn = false;
+
                         // get the game status
                         if (gameStatus() == 0) {
-                            turn = turn == X ? O : X;
                             tv_turn.setText("Turn: " + turn);
-
-                            // send the move
                             sendMove(board);
-                            myTurn = false;
                         } else if (gameStatus() == -1) {
                             tv_turn.setText("Game: Draw");
-                            stopMatch();
+                            stopMatch(myTurn);
                         } else {
-                            sendWinner(turn);
-                            tv_turn.setText(turn + " Wins!");
-                            stopMatch();
+                            sendWinner();
+                            stopMatch(myTurn);
                         }
                     } else {
                         tv_turn.setText("Please choose a Cell Which is not already Occupied");
@@ -116,10 +119,13 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
     }
 
     protected boolean isCellSet(int r, int c) {
-        return !(board[r][c] == ' ');
+        return !(board[r][c] == 0);
     }
 
-    protected void stopMatch() {
+    protected void stopMatch(boolean myTurn) {
+        matchStopped = true;
+
+        // disable play inputs
         for (int i = 0; i < mainBoard.getChildCount(); i++) {
             TableRow row = (TableRow) mainBoard.getChildAt(i);
             for (int j = 0; j < row.getChildCount(); j++) {
@@ -128,13 +134,17 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                 tv.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.gray));
             }
         }
+
+        // show the new match button if we can start the game again
+        if (myTurn)
+            btnNewMatch.setVisibility(View.VISIBLE);
     }
 
-    protected void resetBoard(char[][] board) {
+    protected void resetBoard(int[][] board) {
         for (int i = 0; i < size; i++) {
             TableRow row = (TableRow) mainBoard.getChildAt(i);
             for (int j = 0; j < size; j++) {
-                char c = board != null ? board[i][j] : ' ';
+                char c = board != null ? (char) board[i][j] : 0;
                 this.board[i][j] = c;
 
                 TextView tv = (TextView) row.getChildAt(j);
@@ -178,7 +188,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         boolean boardFull = true;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (board[i][j] == ' ')
+                if (board[i][j] == 0)
                     boardFull = false;
             }
         }

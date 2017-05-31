@@ -3,6 +3,7 @@ package com.bridgefy.samples.chat;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -126,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
             if (message.getContent().get("device_name") != null) {
                 Peer peer = new Peer(message.getSenderId(),
                         (String) message.getContent().get("device_name"));
+                peer.setNearby(true);
                 peersAdapter.addPeer(peer);
 
             // any other direct message should be treated as such
@@ -164,7 +166,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDeviceLost(Device peer) {
-//            peersAdapter.removePeer(peer.getUserId());
+            Log.w(TAG, "onDeviceLost: " + peer.getUserId());
+            peersAdapter.removePeer(peer);
         }
 
         @Override
@@ -212,20 +215,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
         void addPeer(Peer peer) {
-            if (!peers.contains(peer)) {
+            int position = getPeerPosition(peer.getUuid());
+            if (position > -1) {
+                peers.set(position, peer);
+                notifyItemChanged(position);
+            } else {
                 peers.add(peer);
                 notifyItemInserted(peers.size() - 1);
             }
         }
 
-//        void removePeer(String peerId) {
-//            for (int i = 0; i <= peers.size(); i++) {
-//                if (peers.get(i).getUuid().equals(peerId)) {
-//                    peers.remove(i);
-//                    notifyItemRemoved(i);
-//                }
-//            }
-//        }
+        void removePeer(Device lostPeer) {
+            int position = getPeerPosition(lostPeer.getUserId());
+            if (position > -1) {
+                Peer peer = peers.get(position);
+                peer.setNearby(false);
+                peers.set(position, peer);
+                notifyItemChanged(position);
+            }
+        }
+
+        private int getPeerPosition(String peerId) {
+            for (int i = 0; i < peers.size(); i++) {
+                if (peers.get(i).getUuid().equals(peerId))
+                    return i;
+            }
+            return -1;
+        }
         
         @Override
         public PeerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -253,6 +269,12 @@ public class MainActivity extends AppCompatActivity {
             void setPeer(Peer peer) {
                 this.peer = peer;
                 this.mContentView.setText(peer.getDeviceName());
+
+                if (peer.isNearby()) {
+                    this.mContentView.setTextColor(Color.BLACK);
+                } else {
+                    this.mContentView.setTextColor(Color.GRAY);
+                }
             }
 
             public void onClick(View v) {

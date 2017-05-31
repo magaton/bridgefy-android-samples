@@ -15,12 +15,12 @@ public class Move {
 
     String mid;
     HashMap<Character, String> participants;
-    char[][] board = new char[3][3];
+    int[][] board = new int[3][3];
     int seq;
     String winner;
 
 
-    public Move(String mid, int seq, char[][] board) {
+    public Move(String mid, int seq, int[][] board) {
         this.mid = mid;
         this.seq = seq;
         this.board = board;
@@ -65,16 +65,12 @@ public class Move {
         this.participants = participants;
     }
 
-    public void setBoard(char[][] board) {
-        this.board = board;
+    public HashMap<Character, String> getParticipants() {
+        return participants;
     }
 
     public int getSequence() {
         return seq;
-    }
-
-    public void setSeq(int seq) {
-        this.seq = seq;
     }
 
     public void setWinner(String winner) {
@@ -89,7 +85,7 @@ public class Move {
         return mid;
     }
 
-    public char[][] getBoard() {
+    public int[][] getBoard() {
         return board;
     }
 

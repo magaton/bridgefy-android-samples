@@ -51,15 +51,14 @@ public class BridgefyListener {
     private StateListener stateListener = new StateListener() {
         @Override
         public void onDeviceConnected(Device device, Session session) {
-            // we present ourselves to the user
-            device.sendMessage(
-                    new Player(uuid, username).toHashMap());
+            // send a handshake to nearby devices
+            device.sendMessage(new Player(uuid, username).toHashMap());
         }
 
         @Override
         public void onDeviceLost(Device device) {
-            // post this event via the Otto plugin so our components can update their views
-//            ottoBus.post(device);
+            // let our components know that a device is no longer in range
+            ottoBus.post(device);
         }
 
         @Override
@@ -82,7 +81,13 @@ public class BridgefyListener {
         @Override
         public void onMessageReceived(Message message) {
             // identify the type of incoming event
-            int eventOrdinal = ((Double) message.getContent().get("event")).intValue();
+            int eventOrdinal;
+            Object eventObj = message.getContent().get("event");
+            if (eventObj instanceof Double) {
+                eventOrdinal = ((Double) eventObj).intValue();
+            } else {
+                eventOrdinal = (Integer) eventObj;
+            }
             Event.EventType eventType = Event.EventType.values()[eventOrdinal];
             switch (eventType) {
                 case FIRST_MESSAGE:

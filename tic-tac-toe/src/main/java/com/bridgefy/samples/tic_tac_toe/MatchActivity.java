@@ -3,6 +3,7 @@ package com.bridgefy.samples.tic_tac_toe;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
@@ -14,9 +15,11 @@ import com.squareup.otto.Subscribe;
 import java.util.HashMap;
 import java.util.UUID;
 
+import butterknife.OnClick;
+
 public class MatchActivity extends TicTacToeActivity {
 
-    private static final String TAG = "MatchActivity";
+    public static final String TAG = "MatchActivity";
 
     // a globaly available variable that identifies the current match
     public static String matchId;
@@ -61,37 +64,57 @@ public class MatchActivity extends TicTacToeActivity {
         // unregister this activity from the Otto plugin (not a part of the Bridgefy framework)
         BridgefyListener.getOttoBus().unregister(this);
 
-        if (isFinishing())
+        if (isFinishing()) {
+            Log.w(TAG, "Setting matchId to null");
             matchId = null;
+        }
 
         super.onDestroy();
     }
 
     @Override
-    void sendMove(char[][] board) {
+    void sendMove(int[][] board) {
+        // generate this game's match Id
         if (matchId == null) {
-            // generate our permanent matchId
             matchId = generateMatchId();
             Log.d(TAG, "Starting Match with: " + player.getNick());
             Log.d(TAG, "            matchId: " + matchId);
         }
+
+        // create our Move object
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
+        Log.d(TAG, "Sending Move for matchId: " + matchId);
+        Log.d(TAG, "... " + move.toString());
 
         // preserve the Move locally and send it as a message
-        MainActivity.onMoveReceived(move);
+        onMoveReceived(move);
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
     }
 
     @Override
-    void sendWinner(char w) {
+    void sendWinner() {
+        tv_turn.setText("You win!");
+
+        // create the move
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
-        move.setWinner(participants.get(w));
+        move.setWinner(BridgefyListener.getUuid());
+
+        // log
+        Log.d(TAG, "Sending Move for matchId: " + matchId);
+        Log.d(TAG, "... " + move.toString());
 
         // preserve the Move locally and send it as a message
-        MainActivity.onMoveReceived(move);
+        onMoveReceived(move);
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
+    }
+
+    @OnClick({R.id.button_new_match})
+    void newMatch() {
+        // clear the board
+        btnNewMatch.setVisibility(View.GONE);
+        initializeBoard();
     }
 
 
@@ -104,7 +127,7 @@ public class MatchActivity extends TicTacToeActivity {
         // work only with Move objects from our current match or if a match hasn't been set yet
         if (move.getMatchId().equals(matchId) || matchId == null) {
             if (move.getSequence() > sequence) {
-                // get a reference to out matchId
+                // get a reference to our matchId
                 if (matchId == null) {
                     matchId = move.getMatchId();
                     Log.d(TAG, "Starting Match with: " + player.getNick());
@@ -114,24 +137,29 @@ public class MatchActivity extends TicTacToeActivity {
                     Log.d(TAG, "... " + move.toString());
                 }
 
+                // enable the controls again if they had stopped before
+                if (matchStopped) {
+                    initializeBoard();
+                    matchStopped = false;
+                }
+
                 if (move.getWinner() == null) {
                     // if the other player started the match, switch the symbols
-                    if (move.getSequence()%2 == 1) {
+                    if (move.getSequence() % 2 == 1) {
                         turn = O;
                         myTurnChar = O;
                         participants.put(O, BridgefyListener.getUuid());
                         participants.put(X, player.getUuid());
                     }
-
-                    // move the board
-                    myTurn = true;
-                    turn = myTurnChar;
-
                     tv_turn.setText("Your turn");
                 } else {
                     tv_turn.setText(turn + " Wins!");
-                    stopMatch();
+                    stopMatch(true);
                 }
+
+                // switch the turn
+                myTurn = true;
+                turn = myTurnChar;
 
                 // set the board to its current status and update the sequence
                 resetBoard(move.getBoard());

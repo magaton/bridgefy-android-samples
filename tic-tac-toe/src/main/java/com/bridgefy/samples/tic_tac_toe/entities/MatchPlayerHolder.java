@@ -1,9 +1,5 @@
 package com.bridgefy.samples.tic_tac_toe.entities;
 
-import com.google.gson.Gson;
-
-import java.util.HashMap;
-
 /**
  * @author dekaru on 5/9/17.
  */
@@ -20,13 +16,6 @@ public class MatchPlayerHolder {
 
     public MatchPlayerHolder(Move move) {
         this.move = move;
-    }
-
-
-    public HashMap<String, Object> toHashMap() {
-        return new Event<>(
-                Event.EventType.FIRST_MESSAGE,
-                this).toHashMap();
     }
 
 
@@ -53,15 +42,4 @@ public class MatchPlayerHolder {
     public void setMove(Move move) {
         this.move = move;
     }
-
-
-    @Override
-    public String toString() {
-        return new Gson().toJson(this);
-    }
-
-    public static MatchPlayerHolder create(String json) {
-        return new Gson().fromJson(json, MatchPlayerHolder.class);
-    }
-
 }

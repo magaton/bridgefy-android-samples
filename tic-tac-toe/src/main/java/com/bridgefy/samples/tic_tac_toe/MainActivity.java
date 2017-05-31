@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static String TAG = "MainActivity";
+    public final static String TAG = "MainActivity";
 
     private boolean isRegistered = false;
     String username;
@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPlayerLost(Device player) {
         // The Player.uuid field is created with the first 5 digits of the Device.uuid field
         Log.w(TAG, "Player lost: " + player.getUserId());
-//        playersAdapter.removePlayer(player.getUserId());
+        playersAdapter.removePlayer(player.getUserId());
     }
 
     @Subscribe
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                 notifyItemChanged(otherPlayerPosition);
 
             } else {
-                // otherwise, look for an existing Move object
+                // otherwise, look for an existing Move object that matches this Match Id
                 int otherMovePosition = getMovePosition(move.getMatchId());
                 if (otherMovePosition > -1) {
                     Log.i(TAG, "Updating Move");
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int getPlayerPosition(String uuid) {
-            for (int i = 0; i <= matchPlayers.size(); i++) {
+            for (int i = 0; i < matchPlayers.size(); i++) {
                 if (matchPlayers.get(i).getPlayer().getUuid().equals(uuid)) {
                     return i;
                 }
@@ -214,22 +214,23 @@ public class MainActivity extends AppCompatActivity {
         }
 
         int getMovePosition(String matchId) {
-            for (int i = 0; i <= matchPlayers.size(); i++) {
-                if (matchPlayers.get(i).getMove().getMatchId().equals(matchId)) {
+            for (int i = 0; i < matchPlayers.size(); i++) {
+                if (matchPlayers.get(i).getMove() != null &&
+                        matchPlayers.get(i).getMove().getMatchId().equals(matchId)) {
                     return i;
                 }
             }
             return -1;
         }
 
-//        void removePlayer(String playerId) {
-//            for (int i = 0; i <= matchPlayers.size(); i++) {
-//                if (matchPlayers.get(i).second.getUuid().equals(playerId)) {
-//                    matchPlayers.remove(i);
-//                    notifyItemRemoved(i);
-//                }
-//            }
-//        }
+        void removePlayer(String playerId) {
+            for (int i = 0; i < matchPlayers.size(); i++) {
+                if (matchPlayers.get(i).getPlayer().getUuid().equals(playerId)) {
+                    matchPlayers.remove(i);
+                    notifyItemRemoved(i);
+                }
+            }
+        }
 
         @Override
         public PlayerViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -258,11 +259,21 @@ public class MainActivity extends AppCompatActivity {
 
         void setMatchPlayerHolder(MatchPlayerHolder mph) {
             this.matchPlayerHolder = mph;
-            playerView.setText(mph.getPlayer().getNick());
 
-            // A bold style marks player with ongoing matches
-            if (mph.getMatchId() != null) {
-                playerView.setTypeface(null, Typeface.BOLD);
+            // most common case are nearby players which might include a Match information
+            if (mph.getPlayer() != null) {
+                playerView.setText(mph.getPlayer().getNick());
+
+                // A bold style marks player with ongoing matches
+                if (mph.getMatchId() != null) {
+                    playerView.setTypeface(null, Typeface.BOLD);
+                }
+
+            // but a MPH object with just a Move child means we're watching someone else play
+            } else if (mph.getMove() != null) {
+//                playerView.setText(
+//                        mph.getMove().getParticipants().get(TicTacToeActivity.O) + " vs. " +
+//                        mph.getMove().getParticipants().get(TicTacToeActivity.X));
             }
         }
 
