@@ -6,6 +6,7 @@ import com.bridgefy.samples.tic_tac_toe.entities.Event;
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
 import com.bridgefy.samples.tic_tac_toe.entities.RefuseMatch;
+import com.bridgefy.sdk.client.Bridgefy;
 import com.bridgefy.sdk.client.Device;
 import com.bridgefy.sdk.client.Message;
 import com.bridgefy.sdk.client.MessageListener;
@@ -94,14 +95,18 @@ public class BridgefyListener {
                     // recreate the RefuseMatch object from the incoming message
                     // post the found object to our activities via the Otto plugin
                     ottoBus.post(RefuseMatch.create(message));
+
+                    // let iPhone devices know we're available
+                    Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(
+                            new Event<>(
+                                    Event.EventType.AVAILABLE,
+                                    this).toHashMap()));
                     break;
             }
         }
 
         @Override
         public void onBroadcastMessageReceived(Message message) {
-            Log.d(TAG, "BroadcastMessageReceived: " + new Gson().toJson(message.getContent().toString()));
-
             // build a TicTacToe Move object from our incoming Bridgefy Message
             Event.EventType eventType = extractType(message);
             switch (eventType) {
@@ -115,18 +120,13 @@ public class BridgefyListener {
                     ottoBus.post(move);
                     break;
 
-                case REFUSE_MATCH:
-                    // recreate the RefuseMatch object from the incoming message
-                    // post the found object to our activities via the Otto plugin
-                    ottoBus.post(RefuseMatch.create(message));
-                    break;
-
                 case AVAILABLE:
-                    Log.d(TAG, "AVAILABLE event not implemented yet");
+                    Log.d(TAG, "AVAILABLE event not implemented.");
                     break;
 
                 default:
-                    Log.d(TAG, "Event not recognized received.");
+                    Log.d(TAG, "Unrecognized Event received: " +
+                            new Gson().toJson(message.getContent().toString()));
                     break;
             }
 
