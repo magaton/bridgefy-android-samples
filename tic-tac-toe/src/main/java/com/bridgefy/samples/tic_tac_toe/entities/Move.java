@@ -1,6 +1,7 @@
 package com.bridgefy.samples.tic_tac_toe.entities;
 
 import com.bridgefy.samples.tic_tac_toe.BridgefyListener;
+import com.bridgefy.samples.tic_tac_toe.TicTacToeActivity;
 import com.bridgefy.sdk.client.Message;
 import com.google.gson.Gson;
 
@@ -13,10 +14,10 @@ import java.util.HashMap;
 public class Move {
 
     String mid;
-    Participants participants;
+    HashMap<Character, String> participants;
     int[][] board = new int[3][3];
     int seq;
-    String winner;
+    int winner;
 
 
     public Move(String mid, int seq, int[][] board) {
@@ -46,8 +47,8 @@ public class Move {
      */
     public String getOtherUuid() {
         if (myMatch())
-            return BridgefyListener.getUuid().equals(participants.getO()) ?
-                    participants.getX() : participants.getO();
+            return BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.O)) ?
+                    participants.get(TicTacToeActivity.X) : participants.get(TicTacToeActivity.O);
         else
             return null;
     }
@@ -56,15 +57,15 @@ public class Move {
      * @return True if this Move belongs to a Match that belongs to the current user
      */
     public boolean myMatch() {
-        return (BridgefyListener.getUuid().equals(participants.getO()) ||
-                BridgefyListener.getUuid().equals(participants.getX()));
+        return (BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.O)) ||
+                BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.X)));
     }
 
-    public void setParticipants(Participants participants) {
+    public void setParticipants(HashMap<Character, String> participants) {
         this.participants = participants;
     }
 
-    public Participants getParticipants() {
+    public HashMap<Character, String> getParticipants() {
         return participants;
     }
 
@@ -72,11 +73,11 @@ public class Move {
         return seq;
     }
 
-    public void setWinner(String winner) {
+    public void setWinner(int winner) {
         this.winner = winner;
     }
 
-    public String getWinner() {
+    public int getWinner() {
         return winner;
     }
 

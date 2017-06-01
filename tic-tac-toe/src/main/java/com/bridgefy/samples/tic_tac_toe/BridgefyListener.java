@@ -96,7 +96,7 @@ public class BridgefyListener {
                     // post the found object to our activities via the Otto plugin
                     ottoBus.post(RefuseMatch.create(message));
 
-                    // let iPhone devices know we're available
+                    // let iPhone devices know we're available (not required on Android)
                     Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(
                             new Event<>(
                                     Event.EventType.AVAILABLE,

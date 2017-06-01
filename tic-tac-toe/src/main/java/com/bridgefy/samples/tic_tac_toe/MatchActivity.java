@@ -3,16 +3,18 @@ package com.bridgefy.samples.tic_tac_toe;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
-import com.bridgefy.samples.tic_tac_toe.entities.Participants;
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
 import com.bridgefy.samples.tic_tac_toe.entities.RefuseMatch;
 import com.bridgefy.sdk.client.Bridgefy;
 import com.squareup.otto.Subscribe;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import butterknife.OnClick;
@@ -28,7 +30,7 @@ public class MatchActivity extends TicTacToeActivity {
     private Player player;
 
     // a Participants object created
-    Participants participants;
+    HashMap<Character, String> participants;
 
     private int sequence = 0;
 
@@ -41,7 +43,9 @@ public class MatchActivity extends TicTacToeActivity {
         player = Player.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_PLAYER));
 
         // create our participants object for the Move message
-        participants = new Participants(BridgefyListener.getUuid(), player.getUuid());
+        participants = new HashMap<>();
+        participants.put(X, BridgefyListener.getUuid());
+        participants.put(O, player.getUuid());
 
         // check if this Match was started with a corresponding matchId
         Move move = Move.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_MOVE));
@@ -71,6 +75,34 @@ public class MatchActivity extends TicTacToeActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_match, menu);
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        endMatch();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_exit:
+                endMatch();
+                return true;
+        }
+        return false;
+    }
+
+    private void endMatch() {
+        Bridgefy.sendMessage(Bridgefy.createMessage(player.getUuid(),
+                new RefuseMatch(matchId, false).toHashMap()));
+        MainActivity.dropMatch(matchId);
+        finish();
+    }
+
+    @Override
     void sendMove(int[][] board) {
         // generate this game's match Id
         if (matchId == null) {
@@ -87,6 +119,7 @@ public class MatchActivity extends TicTacToeActivity {
 
         // preserve the Move locally and send it as a message
         onMoveReceived(move);
+        MainActivity.onMoveReceived(move);
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
     }
 
@@ -97,7 +130,7 @@ public class MatchActivity extends TicTacToeActivity {
         // create the move
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
-        move.setWinner(BridgefyListener.getUuid());
+        move.setWinner(myTurnChar == X ? 1 : 2);
 
         // log
         Log.d(TAG, "Sending Move for matchId: " + matchId);
@@ -105,6 +138,7 @@ public class MatchActivity extends TicTacToeActivity {
 
         // preserve the Move locally and send it as a message
         onMoveReceived(move);
+        MainActivity.onMoveReceived(move);
         Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
     }
 
@@ -141,13 +175,13 @@ public class MatchActivity extends TicTacToeActivity {
                     matchStopped = false;
                 }
 
-                if (move.getWinner() == null) {
+                if (move.getWinner() == 0) {
                     // if the other player started the match, switch the symbols
                     if (move.getSequence() % 2 == 1) {
                         turn = O;
                         myTurnChar = O;
-                        participants.setO(BridgefyListener.getUuid());
-                        participants.setX(player.getUuid());
+                        participants.put(O, BridgefyListener.getUuid());
+                        participants.put(X, player.getUuid());
                     }
                     tv_turn.setText("Your turn");
                 } else {
@@ -176,6 +210,7 @@ public class MatchActivity extends TicTacToeActivity {
             Toast.makeText(getBaseContext(),
                                 String.format(getString(R.string.match_rejected), player.getNick()),
                                 Toast.LENGTH_LONG).show();
+            MainActivity.dropMatch(matchId);
             finish();
         }
     }

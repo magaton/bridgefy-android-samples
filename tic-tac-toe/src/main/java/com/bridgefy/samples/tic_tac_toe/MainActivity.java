@@ -115,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
         playersAdapter.addMove(move);
     }
 
+    public static void dropMatch(String matchId) {
+        playersAdapter.dropMatch(matchId);
+    }
+
 
     /**
      *      BRIDGEFY REGISTRATION LISTENER
@@ -225,6 +229,16 @@ public class MainActivity extends AppCompatActivity {
                 if (matchPlayers.get(i).getPlayer().getUuid().equals(playerId)) {
                     matchPlayers.remove(i);
                     notifyItemRemoved(i);
+                }
+            }
+        }
+
+        void dropMatch(String matchId) {
+            for (int i = 0; i < matchPlayers.size(); i++) {
+                if (matchPlayers.get(i).getMove() != null &&
+                        matchPlayers.get(i).getMove().getMatchId().equals(matchId)) {
+                    matchPlayers.get(i).setMove(null);
+                    notifyItemChanged(i);
                 }
             }
         }
