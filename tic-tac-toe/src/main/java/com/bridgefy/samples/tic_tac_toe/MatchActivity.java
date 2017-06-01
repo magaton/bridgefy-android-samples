@@ -7,12 +7,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
+import com.bridgefy.samples.tic_tac_toe.entities.Participants;
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
 import com.bridgefy.samples.tic_tac_toe.entities.RefuseMatch;
 import com.bridgefy.sdk.client.Bridgefy;
 import com.squareup.otto.Subscribe;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 import butterknife.OnClick;
@@ -28,7 +28,7 @@ public class MatchActivity extends TicTacToeActivity {
     private Player player;
 
     // a Participants object created
-    HashMap<Character, String> participants;
+    Participants participants;
 
     private int sequence = 0;
 
@@ -41,9 +41,7 @@ public class MatchActivity extends TicTacToeActivity {
         player = Player.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_PLAYER));
 
         // create our participants object for the Move message
-        participants = new HashMap<>();
-        participants.put(X, BridgefyListener.getUuid());
-        participants.put(O, player.getUuid());
+        participants = new Participants(BridgefyListener.getUuid(), player.getUuid());
 
         // check if this Match was started with a corresponding matchId
         Move move = Move.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_MOVE));
@@ -148,8 +146,8 @@ public class MatchActivity extends TicTacToeActivity {
                     if (move.getSequence() % 2 == 1) {
                         turn = O;
                         myTurnChar = O;
-                        participants.put(O, BridgefyListener.getUuid());
-                        participants.put(X, player.getUuid());
+                        participants.setO(BridgefyListener.getUuid());
+                        participants.setX(player.getUuid());
                     }
                     tv_turn.setText("Your turn");
                 } else {
