@@ -38,8 +38,8 @@ public class DevicesActivity extends AppCompatActivity {
     private final String TAG = "DevicesActivity";
 
     @BindView(R.id.devices_recycler_view)
-    RecyclerView devicesRecyclerView;
-    DevicesAdapter devicesAdapter;
+    RecyclerView    devicesRecyclerView;
+    DevicesAdapter  devicesAdapter;
 
 
     @Override
@@ -59,7 +59,7 @@ public class DevicesActivity extends AppCompatActivity {
             initializeBridgefy();
         } else {
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
+                    new String[] { Manifest.permission.ACCESS_FINE_LOCATION }, 0);
         }
     }
 
@@ -67,18 +67,15 @@ public class DevicesActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (isFinishing()) {
-            // stop bridgefy operations
-            Bridgefy.stop();
-        }
+        Bridgefy.stop();
     }
 
 
     /**
-     * BRIDGEFY REGISTRATION LISTENERS
+     *      BRIDGEFY REGISTRATION LISTENERS
      */
 
-    RegistrationListener registrationListener = new RegistrationListener() {
+    RegistrationListener registrationListener=new RegistrationListener() {
         @Override
         public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
             Log.i(TAG, "onRegistrationSuccessful: current userId is: " + bridgefyClient.getUserUuid());
@@ -86,22 +83,32 @@ public class DevicesActivity extends AppCompatActivity {
             Log.i(TAG, "Device Evaluation " + bridgefyClient.getDeviceProfile().getDeviceEvaluation());
 
             // Start the Bridgefy SDK
-            Bridgefy.start(messageListener, stateListener);
+            Bridgefy.start(messageListener,stateListener);
         }
 
         @Override
         public void onRegistrationFailed(int errorCode, String message) {
             Log.e(TAG, "onRegistrationFailed: failed with ERROR_CODE: " + errorCode + ", MESSAGE: " + message);
-            Toast.makeText(DevicesActivity.this, "Bridgefy registration did not succeed.", Toast.LENGTH_LONG).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(DevicesActivity.this, "Bridgefy registration did not succeed.", Toast.LENGTH_LONG).show();
+                }
+            });
         }
     };
 
 
+
+
+
+
     /**
-     * BRIDGEFY WORKFLOW LISTENERS
+     *      BRIDGEFY WORKFLOW LISTENERS
      */
 
-    StateListener stateListener = new StateListener() {
+
+        StateListener stateListener =new StateListener() {
         @Override
         public void onDeviceConnected(Device device, Session session) {
             Log.i(TAG, "Device found: " + device.getUserId());
@@ -113,6 +120,7 @@ public class DevicesActivity extends AppCompatActivity {
             Log.w(TAG, "Device lost: " + device.getUserId());
         }
 
+
         @Override
         public void onStarted() {
             super.onStarted();
@@ -122,7 +130,7 @@ public class DevicesActivity extends AppCompatActivity {
         @Override
         public void onStartError(String s, int i) {
             super.onStartError(s, i);
-            Log.e(TAG, "onStartError: " + s + " " + i);
+            Log.e(TAG, "onStartError: "+s +" "+ i );
         }
 
         @Override
@@ -133,7 +141,9 @@ public class DevicesActivity extends AppCompatActivity {
     };
 
 
-    MessageListener messageListener = new MessageListener() {
+
+
+    MessageListener messageListener=new MessageListener() {
 
         @Override
         public void onMessageReceived(Message message) {
@@ -158,19 +168,23 @@ public class DevicesActivity extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
 
         }
+
     };
 
 
+
+
     /**
-     * OTHER STUFF
+     *      OTHER STUFF
      */
     private void sendMessage(Device device) {
         // construir objeto de mensaje
         HashMap<String, Object> data = new HashMap<>();
-        data.put("manufacturer ", Build.MANUFACTURER);
+        data.put("manufacturer ",Build.MANUFACTURER);
         data.put("model", Build.MODEL);
 
         // since this is a broadcast message, it's not necessary to specify a receiver
+        Message message = Bridgefy.createMessage(null, data);
         device.sendMessage(data);
 
         Log.d(TAG, "Message sent!");
@@ -193,7 +207,7 @@ public class DevicesActivity extends AppCompatActivity {
         }
     }
 
-    private class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {
+    public class DevicesAdapter extends RecyclerView.Adapter<DeviceViewHolder> {
         // the list that holds our incoming devices
         ArrayList<String> devices;
 
@@ -216,7 +230,6 @@ public class DevicesActivity extends AppCompatActivity {
             return false;
         }
 
-        // TODO
         void removeDevice(Device device) {
             int position = devices.indexOf(device);
             if (position > -1) {

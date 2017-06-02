@@ -27,6 +27,11 @@ android {
             url "http://maven.bridgefy.com/artifactory/libs-release-local"
             artifactUrls = ["http://jcenter.bintray.com/"]
         }
+
+        maven {
+            url "http://maven.bridgefy.com/artifactory/libs-snapshot-local"
+            artifactUrls = ["http://jcenter.bintray.com/"]
+        }
     }
 
     packagingOptions {
@@ -43,7 +48,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'com.bridgefy:android-sdk:1.0.+'
+    compile 'com.bridgefy:android-sdk:1.0.15-SNAPSHOT'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:design:25.3.1'
