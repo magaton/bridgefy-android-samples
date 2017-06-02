@@ -22,6 +22,7 @@ import com.bridgefy.sdk.client.RegistrationListener;
 import com.bridgefy.sdk.client.StateListener;
 import com.bridgefy.sdk.samples.alerts.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -45,6 +46,11 @@ public class MainActivity extends AppCompatActivity {
     private int receivedAlertCounter = 0;
     Unbinder unbinder;
     private String TAG = "BRIDGEFY_SAMPLE";
+    private ArrayList<Alert> alertsData=new ArrayList<>();
+    String fragmentTag = "alerts_fragment";
+    String number = "number";
+    String date_sent = "date_sent";
+    String device_name = "device_name";
 
 
     @Override
@@ -132,10 +138,11 @@ public class MainActivity extends AppCompatActivity {
 
         //assemble the data that we are about to send
 
+
         HashMap<String, Object> data = new HashMap<>();
-        data.put("number", sentAlertCounter);
-        data.put("dateSent", System.currentTimeMillis());
-        data.put("device_name", Build.MANUFACTURER + " " + Build.MODEL);
+        data.put(number, sentAlertCounter);
+        data.put(date_sent, Double.parseDouble("" + System.currentTimeMillis()));
+        data.put(device_name, Build.MANUFACTURER + " " + Build.MODEL);
         Message message = Bridgefy.createMessage(data);
 
 
@@ -161,6 +168,20 @@ public class MainActivity extends AppCompatActivity {
 
             receivedAlertCounter++;
             receivedAlerts.setText(String.valueOf(receivedAlertCounter));
+
+
+
+            HashMap<String,Object> content = message.getContent();
+
+            Alert alert = new Alert(message.getSenderId(), (Integer) content.get(number), (String) content.get(device_name), ((Double) content.get(date_sent)).longValue());
+
+            alertsData.add(alert);
+
+            AlertFragment alertFragment= (AlertFragment) getSupportFragmentManager().findFragmentByTag(fragmentTag);
+            if (alertFragment!=null)
+            {
+                alertFragment.updateList(alertsData);
+            }
         }
 
     };
@@ -180,8 +201,10 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_alerts) {
+
+            AlertFragment alertFragment = AlertFragment.newInstance(alertsData);
+            getSupportFragmentManager().beginTransaction().add(R.id.content_main,alertFragment,"alerts_fragment").addToBackStack(null).commit();
 
 
             return true;
@@ -190,5 +213,15 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
 
+        if (getSupportFragmentManager().findFragmentByTag(fragmentTag)!=null)
+        {
+            getSupportFragmentManager().popBackStackImmediate();
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
 }
