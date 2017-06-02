@@ -20,6 +20,8 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_users" />
+    <include
+        layout="@layout/content_users"
+        android:layout_height="465dp" />
 
 </android.support.design.widget.CoordinatorLayout>

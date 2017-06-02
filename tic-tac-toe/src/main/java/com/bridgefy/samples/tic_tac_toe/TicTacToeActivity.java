@@ -38,7 +38,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_board);
+        setContentView(R.layout.activity_match);
         ButterKnife.bind(this);
 
         initializeTurn();
@@ -94,11 +94,11 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                         }
 
                         // update the turn
-                        turn = turn == X ? O : X;
                         myTurn = false;
 
                         // get the game status
                         if (gameStatus() == 0) {
+                            turn = turn == X ? O : X;
                             tv_turn.setText("Turn: " + turn);
                             sendMove(board);
                         } else if (gameStatus() == -1) {
@@ -109,7 +109,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                             stopMatch(myTurn);
                         }
                     } else {
-                        tv_turn.setText("Please choose a Cell Which is not already Occupied");
+                        tv_turn.setText("Please choose an empty square");
                     }
                 } else {
                     tv_turn.setText("Wait for your turn!");

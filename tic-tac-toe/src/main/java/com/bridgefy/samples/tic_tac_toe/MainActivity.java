@@ -7,7 +7,6 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -70,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
             playersAdapter = new PlayersAdapter();
             playersRecyclerView.setAdapter(playersAdapter);
             playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-            playersRecyclerView.addItemDecoration(new DividerItemDecoration(this,
-                    DividerItemDecoration.VERTICAL));
+//            playersRecyclerView.addItemDecoration(new DividerItemDecoration(this,
+//                    DividerItemDecoration.VERTICAL));
         }
     }
 

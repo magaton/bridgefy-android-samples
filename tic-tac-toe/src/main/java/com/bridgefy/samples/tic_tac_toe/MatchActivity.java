@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
@@ -17,6 +18,7 @@ import com.squareup.otto.Subscribe;
 import java.util.HashMap;
 import java.util.UUID;
 
+import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MatchActivity extends TicTacToeActivity {
@@ -31,6 +33,13 @@ public class MatchActivity extends TicTacToeActivity {
 
     // a Participants object created
     HashMap<Character, String> participants;
+    HashMap<Character, Integer> scores;
+
+    // score board
+    @BindView(R.id.xScore)
+    TextView scoreX;
+    @BindView(R.id.oScore)
+    TextView scoreO;
 
     private int sequence = 0;
 
@@ -46,6 +55,11 @@ public class MatchActivity extends TicTacToeActivity {
         participants = new HashMap<>();
         participants.put(X, BridgefyListener.getUuid());
         participants.put(O, player.getUuid());
+
+        // initialize the scores HashMap
+        scores = new HashMap<>();
+        scores.put(X, 0);
+        scores.put(O, 0);
 
         // check if this Match was started with a corresponding matchId
         Move move = Move.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_MOVE));
@@ -125,6 +139,7 @@ public class MatchActivity extends TicTacToeActivity {
 
     @Override
     void sendWinner() {
+        updateScores();
         tv_turn.setText("You win!");
 
         // create the move
@@ -185,6 +200,10 @@ public class MatchActivity extends TicTacToeActivity {
                     }
                     tv_turn.setText("Your turn");
                 } else {
+                    // update the scores
+                    updateScores();
+
+                    // update the turn text
                     tv_turn.setText(turn + " Wins!");
                     stopMatch(true);
                 }
@@ -201,6 +220,15 @@ public class MatchActivity extends TicTacToeActivity {
                 Log.w(TAG, "... " + move.toString());
             }
         }
+    }
+
+    private void updateScores() {
+        int newScore = scores.get(turn) + 1;
+        scores.put(turn, newScore);
+        if (turn == X)
+            scoreX.setText(String.valueOf(newScore));
+        else
+            scoreO.setText(String.valueOf(newScore));
     }
 
     @Subscribe

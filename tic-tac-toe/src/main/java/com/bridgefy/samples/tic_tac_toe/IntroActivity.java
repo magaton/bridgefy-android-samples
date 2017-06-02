@@ -34,13 +34,6 @@ public class IntroActivity extends AppCompatActivity {
 
         // set a default name
         txtUsername.setText(Build.MODEL);
-
-        // Location permissions are needed for BLE communications to work
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[] { Manifest.permission.ACCESS_COARSE_LOCATION }, 0);
-        }
     }
 
 
