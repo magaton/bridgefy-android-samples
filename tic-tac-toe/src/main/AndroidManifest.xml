@@ -20,6 +20,7 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +28,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MatchActivity" />
+        <activity
+            android:name=".MatchActivity"
+            android:screenOrientation="portrait" />
 
         <!-- Bridgefy SDK key -->
         <meta-data

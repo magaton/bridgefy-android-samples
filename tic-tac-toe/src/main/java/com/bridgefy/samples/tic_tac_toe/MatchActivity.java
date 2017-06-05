@@ -17,6 +17,8 @@ import com.squareup.otto.Subscribe;
 
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -27,9 +29,6 @@ public class MatchActivity extends TicTacToeActivity {
 
     // a globaly available variable that identifies the current match
     public static String matchId;
-
-    // a Player object representing our rival
-    private Player player;
 
     // a Participants object created
     HashMap<Character, String> participants;
@@ -110,9 +109,11 @@ public class MatchActivity extends TicTacToeActivity {
     }
 
     private void endMatch() {
-        Bridgefy.sendMessage(Bridgefy.createMessage(player.getUuid(),
-                new RefuseMatch(matchId, false).toHashMap()));
-        MainActivity.dropMatch(matchId);
+        if (matchId != null) {
+            Bridgefy.sendMessage(Bridgefy.createMessage(player.getUuid(),
+                    new RefuseMatch(matchId, false).toHashMap()));
+            MainActivity.dropMatch(matchId);
+        }
         finish();
     }
 
@@ -125,9 +126,39 @@ public class MatchActivity extends TicTacToeActivity {
             Log.d(TAG, "            matchId: " + matchId);
         }
 
-        // create our Move object
+        // create the Move object
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
+
+        // log
+        Log.d(TAG, "Sending Move for matchId: " + matchId);
+        Log.d(TAG, "... " + move.toString());
+
+        // preserve the Move locally and send it as a message
+        onMoveReceived(move);
+        MainActivity.onMoveReceived(move);
+        Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(move.toHashMap()));
+
+        // implement a timeout for the current match
+        new ScheduledThreadPoolExecutor(1).schedule(new Runnable() {
+            public void run() {
+                Log.w(TAG, "Timeout for matchId: " + matchId);
+                endMatch();
+            }
+        }, 25, TimeUnit.SECONDS);
+    }
+
+    @Override
+    void sendWinner() {
+        updateScores();
+        tv_turn.setText(getString(R.string.you_win));
+
+        // create the Move object
+        Move move = new Move(matchId, ++sequence, board);
+        move.setParticipants(participants);
+        move.setWinner(myTurnChar == X ? 1 : 2);
+
+        // log
         Log.d(TAG, "Sending Move for matchId: " + matchId);
         Log.d(TAG, "... " + move.toString());
 
@@ -138,17 +169,14 @@ public class MatchActivity extends TicTacToeActivity {
     }
 
     @Override
-    void sendWinner() {
-        updateScores();
-        tv_turn.setText("You win!");
-
-        // create the move
+    void sendDraw(int[][] board) {
+        // create the Move object
         Move move = new Move(matchId, ++sequence, board);
         move.setParticipants(participants);
-        move.setWinner(myTurnChar == X ? 1 : 2);
+        move.setWinner(-1);
 
         // log
-        Log.d(TAG, "Sending Move for matchId: " + matchId);
+        Log.d(TAG, "Sending Draw for matchId: " + matchId);
         Log.d(TAG, "... " + move.toString());
 
         // preserve the Move locally and send it as a message
@@ -198,13 +226,17 @@ public class MatchActivity extends TicTacToeActivity {
                         participants.put(O, BridgefyListener.getUuid());
                         participants.put(X, player.getUuid());
                     }
-                    tv_turn.setText("Your turn");
+                    tv_turn.setText(String.format(getString(R.string.your_turn),
+                            String.valueOf(myTurnChar)));
+                } else if (move.getWinner() == -1) {
+                    stopMatch(!myTurn);
+                    tv_turn.setText(getString(R.string.draw));
                 } else {
                     // update the scores
                     updateScores();
 
                     // update the turn text
-                    tv_turn.setText(turn + " Wins!");
+                    tv_turn.setText(String.format(getString(R.string.their_win), player.getNick()));
                     stopMatch(true);
                 }
 
@@ -243,10 +275,6 @@ public class MatchActivity extends TicTacToeActivity {
         }
     }
 
-
-    public static String getCurrentMatchId() {
-        return matchId;
-    }
 
     private String generateMatchId() {
         return UUID.randomUUID().toString().substring(0, 5);

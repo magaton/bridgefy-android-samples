@@ -17,9 +17,17 @@
     <string name="button_start">Play</string>
     <string name="error">An Internet connection is needed just this once. Enable it and try again?</string>
 
+
     <!-- Game related strings -->
     <string name="X">"   X   "</string>
     <string name="O">"   O   "</string>
     <string name="none">"          "</string>
     <string name="match_rejected">Sorry, %1$s rejected your invitation to play</string>
+    <string name="draw">Game: Draw</string>
+    <string name="empty_square">Please choose an empty square</string>
+    <string name="wait_turn">Wait for your turn!</string>
+    <string name="your_turn">Your turn, %1$s</string>
+    <string name="you_win">You win!</string>
+    <string name="their_turn">%1$s\'s turn (%2$s)</string>
+    <string name="their_win">%1$s wins!</string>
 </resources>

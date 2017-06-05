@@ -173,7 +173,8 @@ public class MainActivity extends AppCompatActivity {
 
         void addPlayer(Player player) {
             MatchPlayerHolder mph = new MatchPlayerHolder(player);
-            if (!matchPlayers.contains(mph)) {
+            int playerPosition = getPlayerPosition(player.getUuid());
+            if (playerPosition == -1) {
                 matchPlayers.add(mph);
                 notifyItemInserted(matchPlayers.size() - 1);
             }
@@ -206,9 +207,9 @@ public class MainActivity extends AppCompatActivity {
 
         int getPlayerPosition(String uuid) {
             for (int i = 0; i < matchPlayers.size(); i++) {
-                if (matchPlayers.get(i).getPlayer().getUuid().equals(uuid)) {
+                if (matchPlayers.get(i).getPlayer() != null &&
+                        matchPlayers.get(i).getPlayer().getUuid().equals(uuid))
                     return i;
-                }
             }
             return -1;
         }
@@ -216,9 +217,8 @@ public class MainActivity extends AppCompatActivity {
         int getMovePosition(String matchId) {
             for (int i = 0; i < matchPlayers.size(); i++) {
                 if (matchPlayers.get(i).getMove() != null &&
-                        matchPlayers.get(i).getMove().getMatchId().equals(matchId)) {
+                        matchPlayers.get(i).getMove().getMatchId().equals(matchId))
                     return i;
-                }
             }
             return -1;
         }

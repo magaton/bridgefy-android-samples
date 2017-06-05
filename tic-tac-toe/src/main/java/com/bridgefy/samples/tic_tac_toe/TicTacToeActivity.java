@@ -9,6 +9,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.bridgefy.samples.tic_tac_toe.entities.Player;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,6 +36,9 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
     @BindView(R.id.button_new_match)
     Button btnNewMatch;
 
+    // a Player object representing our rival
+    protected Player player;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +54,8 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
 
     abstract void sendWinner();
 
+    abstract void sendDraw(int[][] board);
+
 
     protected void initializeTurn() {
         turn = X;
@@ -62,10 +69,13 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         mainBoard = (TableLayout) findViewById(R.id.mainBoard);
         tv_turn = (TextView) findViewById(R.id.turn);
 
-        if (myTurn)
-            tv_turn.setText("Your turn");
-        else
-            tv_turn.setText("Turn: " + turn);
+        if (myTurn) {
+            tv_turn.setText(String.format(getString(R.string.your_turn),
+                    String.valueOf(myTurnChar)));
+        } else {
+            tv_turn.setText(String.format(getString(R.string.their_turn),
+                    player.getNick(), String.valueOf(flipChar(myTurnChar))));
+        }
 
         resetBoard(null);
 
@@ -77,6 +87,10 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                 tv.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.black));
             }
         }
+    }
+
+    private char flipChar(char c) {
+        return c == X ? O : X;
     }
 
     View.OnClickListener MoveListener(final int r, final int c, final TextView tv) {
@@ -98,21 +112,23 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
 
                         // get the game status
                         if (gameStatus() == 0) {
-                            turn = turn == X ? O : X;
-                            tv_turn.setText("Turn: " + turn);
+                            turn = flipChar(turn);
+                            tv_turn.setText(String.format(getString(R.string.their_turn),
+                                    player.getNick(), String.valueOf(flipChar(myTurnChar))));
                             sendMove(board);
                         } else if (gameStatus() == -1) {
-                            tv_turn.setText("Game: Draw");
+                            tv_turn.setText(getString(R.string.draw));
+                            sendDraw(board);
                             stopMatch(myTurn);
                         } else {
                             sendWinner();
                             stopMatch(myTurn);
                         }
                     } else {
-                        tv_turn.setText("Please choose an empty square");
+                        tv_turn.setText(getString(R.string.empty_square));
                     }
                 } else {
-                    tv_turn.setText("Wait for your turn!");
+                    tv_turn.setText(getString(R.string.wait_turn));
                 }
             }
         };
