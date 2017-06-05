@@ -37,15 +37,15 @@ In order to include the Bridgefy SDK in your project, first add the following re
 
 
 ```java
-    repositories {
-        ...
+repositories {
+    ...
 
-        maven {
-            url "http://maven.bridgefy.com/artifactory/libs-release-local"
-            artifactUrls=["http://jcenter.bintray.com/"]
-        }
-     ....
+    maven {
+        url "http://maven.bridgefy.com/artifactory/libs-release-local"
+        artifactUrls=["http://jcenter.bintray.com/"]
     }
+ ....
+}
 ```
 
 
@@ -60,15 +60,15 @@ compile 'com.bridgefy:android-sdk:1.0.+'
 The Bridgefy SDK needs only a call to the static **initialize()** method in order to create all required objects and to be ready to start operations.
 
 ```java
-        //Always use the Application context to avoid leaks
-        Bridgefy.initialize(getApplicationContext(), XXXXXXXX-XXXX-XXXX-XXXX-XXXX ,registrationListener);
+//Always use the Application context to avoid leaks
+Bridgefy.initialize(getApplicationContext(), XXXXXXXX-XXXX-XXXX-XXXX-XXXX, registrationListener);
 ```
 Alternatively, you can provide a null argument instead of the **apiKey** if you included it in your **AndroidManifest.xml** file.
 
 ```xml
 <meta-data
-            android:name="com.bridgefy.sdk.API_KEY"
-            android:value="..." />
+        android:name="com.bridgefy.sdk.API_KEY"
+        android:value="..." />
 ```
 
 This call requires an active Internet connection on the device in order to check the status of your Bridgefy license. As long as your license is valid, an Internet connection won't be needed again until the time comes to renew or update it.
@@ -92,8 +92,10 @@ public void onRegistrationFailed(int errorCode, String message) {
 The following error codes may be returned if something went wrong:
 
 ```php
--1     registration failed (check specific reason in message
--2     registration failed due to a communications error (e.g. no Internet available)
+-66    registration failed (check specific reason in message)
+-1     registration failed due to a communications error (e.g. no Internet available)
+-2     registration failed due to a misconfiguration issue
+-3     registration failed due to an expired or unauthorized license
 ```
 
 
@@ -127,13 +129,13 @@ At this point, the **StateListener** callback will let you know every time a suc
 ```java
 @Override
 public void onDeviceConnected(Device device) {
-    // Do something with the found device
+// Do something with the found device
     device.sendMessage(...);
 }
 
 @Override
 public void onDeviceLost(Device device) {
-    // Let your implementation know that a device is no longer available
+// Let your implementation know that a device is no longer available
     ...
 }
 ```
