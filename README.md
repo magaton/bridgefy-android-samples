@@ -216,7 +216,7 @@ If you are using Proguard in your project, include the following lines to your c
 
 ## Supported Devices ##
 
-As of April 2017, the following devices have been tested with Bridgefy and offer the best performance:
+As of May 2017, the following devices have been tested with Bridgefy and offer the best performance:
 
 * Nexus 6P
 * Nexus 5X
@@ -230,6 +230,7 @@ As of April 2017, the following devices have been tested with Bridgefy and offer
 * Moto E 2nd gen
 * Sony Xperia Z5
 * Sony Xperia Z5 Compact
+* Raspbery Pi 3 (Android Things)
 
 Other devices not listed here should still work with Bridgefy but no assessment has been made regarding their performance. This list will continue to grow as we test new devices.
 
