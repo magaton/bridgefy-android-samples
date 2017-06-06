@@ -1,6 +1,8 @@
 package com.bridgefy.samples.nearby;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -190,10 +192,27 @@ public class DevicesActivity extends AppCompatActivity {
         Log.d(TAG, "Message sent!");
     }
 
+
+
+    public boolean isThingsDevice(Context context) {
+        final PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature("android.hardware.type.embedded");
+    }
+
     private void initializeBridgefy() {
 
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+
+        if (isThingsDevice(this))
+        {
+            //enabling bluetooth automatically
+            bluetoothAdapter.enable();
+        }
         //Always use steady context objects to avoid leaks
         Bridgefy.initialize(getApplicationContext(), registrationListener);
+
     }
 
     @Override

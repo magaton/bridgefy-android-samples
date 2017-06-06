@@ -1,9 +1,12 @@
 package com.bridgefy.samples.alerts;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -62,7 +65,17 @@ public class MainActivity extends AppCompatActivity {
         deviceText.setText(Build.MANUFACTURER + " " + Build.MODEL);
 
 
-        Bridgefy.initialize(this, "68898033-3dce-4c80-843e-e10982b942ac", new RegistrationListener() {
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+
+        if (isThingsDevice(this))
+        {
+            //enabling bluetooth automatically
+            bluetoothAdapter.enable();
+        }
+
+        Bridgefy.initialize(getApplicationContext(), "68898033-3dce-4c80-843e-e10982b942ac", new RegistrationListener() {
             @Override
             public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
                 super.onRegistrationSuccessful(bridgefyClient);
@@ -85,11 +98,37 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
+
+    public boolean isThingsDevice(Context context) {
+        final PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature("android.hardware.type.embedded");
+    }
+
     StateListener stateListener = new StateListener() {
         @Override
         public void onStarted() {
             super.onStarted();
             Log.i(TAG, "onStarted: Bridgefy started");
+
+
+            if (isThingsDevice(getApplicationContext()))
+            {
+                ///for Android Things devices, we automatically send an alert as soon as possible
+                //since there is no UI to do it
+                //A message will be dispatched every 10 seconds
+
+                final Handler handler=new Handler();
+
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        prepareMessage();
+                        handler.postDelayed(this,10000);
+                    }
+                });
+
+
+            }
         }
 
         @Override
@@ -131,10 +170,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.fab)
-    public void onViewClicked() {
-        sentAlertCounter++;
 
+
+    void prepareMessage()
+    {
+
+        sentAlertCounter++;
 
         //assemble the data that we are about to send
 
@@ -149,6 +190,13 @@ public class MainActivity extends AppCompatActivity {
         //Broadcast messages are sent to anyone that can receive it
         Bridgefy.sendBroadcastMessage(message);
         sentAlerts.setText(String.valueOf(sentAlertCounter));
+    }
+
+    @OnClick(R.id.fab)
+    public void onViewClicked() {
+
+
+      prepareMessage();
     }
 
     @Override

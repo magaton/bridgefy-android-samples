@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "com.bridgefy.samples.nearby"
         minSdkVersion 21
@@ -36,12 +36,10 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-
-
-
     // use the bridgefy distribution
-    compile'com.bridgefy:android-sdk:1.0.+'
-
+    compile 'com.bridgefy:android-sdk:1.0.+'
+    //this dependency is to provide android-things compatibility
+    provided 'com.google.android.things:androidthings:0.4-devpreview'
 
 
     compile 'com.jakewharton:butterknife:8.4.0'

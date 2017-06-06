@@ -1,6 +1,8 @@
 package com.bridgefy.samples.chat;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -61,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.peer_list);
         recyclerView.setAdapter(peersAdapter);
 
+
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+
+        if (isThingsDevice(this))
+        {
+            //enabling bluetooth automatically
+            bluetoothAdapter.enable();
+        }
         Bridgefy.initialize(getApplicationContext(), new RegistrationListener() {
             @Override
             public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
@@ -115,6 +127,15 @@ public class MainActivity extends AppCompatActivity {
         Bridgefy.start(messageListener, stateListener);
     }
 
+
+
+    public boolean isThingsDevice(Context context) {
+        final PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature("android.hardware.type.embedded");
+    }
+
+
+
     private MessageListener messageListener = new MessageListener() {
         @Override
         public void onMessageReceived(Message message) {
@@ -135,6 +156,20 @@ public class MainActivity extends AppCompatActivity {
                         new Intent(message.getSenderId())
                                 .putExtra(INTENT_EXTRA_MSG, incomingMessage));
             }
+
+
+
+
+            if (isThingsDevice(MainActivity.this))
+            {
+                //if it's an Android Things device, reply automatically
+                HashMap<String, Object> content = new HashMap<>();
+                content.put("text", "Beep boop. I'm a bot.");
+                Message replyMessage = Bridgefy.createMessage(message.getSenderId(), content);
+                Bridgefy.sendMessage(replyMessage);
+
+            }
+
         }
 
         @Override
