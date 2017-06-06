@@ -3,6 +3,7 @@ package com.bridgefy.samples.tic_tac_toe;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -11,17 +12,21 @@ import android.widget.TextView;
 
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
 
+import java.util.Random;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public abstract class TicTacToeActivity extends AppCompatActivity {
 
+    private static final String TAG = "TicTacToeActivity";
 
-    private int size;
+
     TableLayout mainBoard;
     TextView tv_turn;
 
     int[][] board;
+    private int size;
 
     // first turn is 'X'
     char turn;
@@ -243,5 +248,46 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         }
 
         return (count_Equal == size);
+    }
+
+
+    /**
+     *      METHODS FOR AUTO RESPONSE
+     */
+    protected int[][] makeRandomMove() {
+        Log.v(TAG, "Generating random move:");
+        int freeSpaces = freeSpaceCount();
+        if (freeSpaces > 0) {
+            int randomSquare = getRandomMove(freeSpaces);
+
+            // fill the random square
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (board[i][j] == 0)
+                        randomSquare--;
+                    if (randomSquare == 0)
+                        board[i][j] = myTurnChar;
+                }
+            }
+        }
+        return board;
+    }
+
+    private int getRandomMove(int freeSpaces) {
+        int randomMove = new Random().nextInt(freeSpaces) + 1;
+        Log.v(TAG, "... Random move is: " + randomMove);
+        return randomMove;
+    }
+
+    private int freeSpaceCount() {
+        int freeSpaces = 0;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (board[i][j] == 0)
+                    freeSpaces++;
+            }
+        }
+        Log.v(TAG, "... Free spaces: " + freeSpaces);
+        return freeSpaces;
     }
 }

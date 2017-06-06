@@ -1,5 +1,7 @@
 package com.bridgefy.samples.tic_tac_toe;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import com.bridgefy.samples.tic_tac_toe.entities.Event;
@@ -118,6 +120,9 @@ public class BridgefyListener {
 
                     // post this event via the Otto plugin so our components can update their views
                     ottoBus.post(move);
+
+                    // answer automatically if the current device is an Android Things device
+                    ottoBus.post(move.getMatchId());
                     break;
 
                 case AVAILABLE:
@@ -149,6 +154,16 @@ public class BridgefyListener {
             return Event.EventType.values()[eventOrdinal];
         }
     };
+
+
+    /**
+     *      UTILS METHODS
+     */
+
+    static boolean isThingsDevice(Context context) {
+        final PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature("android.hardware.type.embedded");
+    }
 
 
     /**

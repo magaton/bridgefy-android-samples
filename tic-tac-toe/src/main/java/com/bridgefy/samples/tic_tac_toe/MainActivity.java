@@ -2,7 +2,6 @@ package com.bridgefy.samples.tic_tac_toe;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
@@ -60,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        if (isThingsDevice(this))
+        if (BridgefyListener.isThingsDevice(this))
         {
             //if this device is running Android Things, don't go through any UI interaction and
             //start right away
@@ -118,13 +117,6 @@ public class MainActivity extends AppCompatActivity {
 
         super.onDestroy();
     }
-
-
-    public boolean isThingsDevice(Context context) {
-        final PackageManager pm = context.getPackageManager();
-        return pm.hasSystemFeature("android.hardware.type.embedded");
-    }
-
 
 
     /**

@@ -145,7 +145,7 @@ public class MatchActivity extends TicTacToeActivity {
                 Log.w(TAG, "Timeout for matchId: " + matchId);
                 endMatch();
             }
-        }, 25, TimeUnit.SECONDS);
+        }, 25, TimeUnit.MINUTES);
     }
 
     @Override
@@ -250,6 +250,20 @@ public class MatchActivity extends TicTacToeActivity {
             } else {
                 Log.w(TAG, "Dumping Move object with an expired seq.");
                 Log.w(TAG, "... " + move.toString());
+            }
+        }
+    }
+
+    // answer automatically if the current device is an Android Things device
+    @Subscribe
+    public void respondMoveIfThingsDevice(String incomingMatchId) {
+        if (matchId != null && matchId.equals(incomingMatchId) &&
+//                player.getNick().equals("Nexus 5X")) {
+                BridgefyListener.isThingsDevice((getApplicationContext()))) {
+            if (!matchStopped) {
+                int[][] board = makeRandomMove();
+                resetBoard(board);
+                sendMove(board);
             }
         }
     }
