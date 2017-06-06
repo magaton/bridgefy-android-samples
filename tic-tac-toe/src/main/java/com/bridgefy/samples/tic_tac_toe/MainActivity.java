@@ -1,9 +1,12 @@
 package com.bridgefy.samples.tic_tac_toe;
 
 import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -55,23 +58,50 @@ public class MainActivity extends AppCompatActivity {
         // load our username
         username = getSharedPreferences(Constants.PREFS_NAME, 0).getString(Constants.PREFS_USERNAME, null);
 
-        // check that we have permissions, otherwise fire the IntroActivity
-        if ((ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
-                (username == null)) {
-            startActivity(new Intent(getBaseContext(), IntroActivity.class));
-            finish();
-        } else {
+
+
+        if (isThingsDevice(this))
+        {
+            //if this device is running Android Things, don't go through any UI interaction and
+            //start right away
+
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            //enabling bluetooth automatically
+            bluetoothAdapter.enable();
+
+            username= Build.MANUFACTURER + " "+Build.MODEL;
             // initialize the Bridgefy framework
             Bridgefy.initialize(getBaseContext(), registrationListener);
+            setupList();
 
-            // initialize the PlayersAdapter and the RecyclerView
-            playersAdapter = new PlayersAdapter();
-            playersRecyclerView.setAdapter(playersAdapter);
-            playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        }
+
+        else
+        {
+            // check that we have permissions, otherwise fire the IntroActivity
+            if ((ContextCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
+                    (username == null)) {
+                startActivity(new Intent(getBaseContext(), IntroActivity.class));
+                finish();
+            } else {
+                // initialize the Bridgefy framework
+                Bridgefy.initialize(getBaseContext(), registrationListener);
+                setupList();
+            }
+        }
+
+    }
+
+
+    private void setupList()
+    {
+        // initialize the PlayersAdapter and the RecyclerView
+        playersAdapter = new PlayersAdapter();
+        playersRecyclerView.setAdapter(playersAdapter);
+        playersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 //            playersRecyclerView.addItemDecoration(new DividerItemDecoration(this,
 //                    DividerItemDecoration.VERTICAL));
-        }
     }
 
     @Override
@@ -87,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onDestroy();
+    }
+
+
+    public boolean isThingsDevice(Context context) {
+        final PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature("android.hardware.type.embedded");
     }
 
 
