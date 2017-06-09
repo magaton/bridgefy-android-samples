@@ -65,14 +65,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-
-        if (isThingsDevice(this))
-        {
+        if (isThingsDevice(this)) {
             //enabling bluetooth automatically
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             bluetoothAdapter.enable();
         }
+
         Bridgefy.initialize(getApplicationContext(), new RegistrationListener() {
             @Override
             public void onRegistrationSuccessful(BridgefyClient bridgefyClient) {
@@ -127,20 +125,14 @@ public class MainActivity extends AppCompatActivity {
         Bridgefy.start(messageListener, stateListener);
     }
 
-
-
     public boolean isThingsDevice(Context context) {
         final PackageManager pm = context.getPackageManager();
         return pm.hasSystemFeature("android.hardware.type.embedded");
     }
 
-
-
     private MessageListener messageListener = new MessageListener() {
         @Override
         public void onMessageReceived(Message message) {
-            super.onMessageReceived(message);
-
             // direct messages carrying a Device name represent device handshakes
             if (message.getContent().get("device_name") != null) {
                 Peer peer = new Peer(message.getSenderId(),
@@ -157,11 +149,7 @@ public class MainActivity extends AppCompatActivity {
                                 .putExtra(INTENT_EXTRA_MSG, incomingMessage));
             }
 
-
-
-
-            if (isThingsDevice(MainActivity.this))
-            {
+            if (isThingsDevice(MainActivity.this)) {
                 //if it's an Android Things device, reply automatically
                 HashMap<String, Object> content = new HashMap<>();
                 content.put("text", "Beep boop. I'm a bot.");
@@ -169,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                 Bridgefy.sendMessage(replyMessage);
 
             }
-
         }
 
         @Override
@@ -287,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return -1;
         }
-        
+
         @Override
         public PeerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())

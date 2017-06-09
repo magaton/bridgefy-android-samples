@@ -1,7 +1,9 @@
 package com.bridgefy.samples.tic_tac_toe;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.util.Log;
 
 import com.bridgefy.samples.tic_tac_toe.entities.Event;
@@ -29,17 +31,19 @@ public class BridgefyListener {
     // This sample app uses the Otto Event Bus to communicate between app components easily.
     // The Otto plugin is not a part of the Bridgefy framework
     private Bus ottoBus;
+    private Context context;
 
     private String username;
     private String uuid;
 
 
-    private BridgefyListener(Bus ottoBus) {
+    private BridgefyListener(Context context, Bus ottoBus) {
+        this.context = context;
         this.ottoBus = ottoBus;
     }
 
-    static void initialize(String uuid, String username) {
-        instance = new BridgefyListener(new Bus());
+    static void initialize(Context context, String uuid, String username) {
+        instance = new BridgefyListener(context, new Bus());
         instance.setUuid(uuid);
         instance.setUsername(username);
     }
@@ -113,10 +117,42 @@ public class BridgefyListener {
             Event.EventType eventType = extractType(message);
             switch (eventType) {
                 case MOVE_EVENT:
-                    Move move = Move.create(message);
+                    final Move move = Move.create(message);
                     // log
                     Log.d(TAG, "Move received for matchId: " + move.getMatchId());
                     Log.d(TAG, "... " + move.toString());
+
+                    // start the MatchActivity if we are on a Things Device
+                    if (isThingsDevice(context) && MatchActivity.matchId == null) {
+//                    if (MatchActivity.matchId == null && BridgefyListener.getUuid().equals("b649bdea-43fb-44ae-afce-02866d9933f4")) {
+                        // get a reference to our player object
+                        int pos = MainActivity.playersAdapter.getPlayerPosition(move.getOtherUuid());
+                        if (pos > -1) {
+                            final Player player = MainActivity.playersAdapter.matchPlayers.get(pos).getPlayer();
+                            if (player != null) {
+                                // start the activity with the incoming player
+                                Intent intent = new Intent(context, MatchActivity.class)
+                                        .putExtra(Constants.INTENT_EXTRA_PLAYER, player.toString())
+                                        .putExtra(Constants.INTENT_EXTRA_MOVE, move.toString());
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent);
+
+                                // repost to our newly created activity so it responds automatically
+                                new Handler().postDelayed(new Runnable() {
+                                    public void run() {
+                                        // post this event via the Otto plugin so our components can update their views
+                                        ottoBus.post(move);
+                                        // answer automatically if the current device is an Android Things device
+                                        ottoBus.post(move.getMatchId());
+                                    }
+                                }, 1500);
+                            } else {
+                                Log.w(TAG, "Incoming player unknown.");
+                            }
+                        } else {
+                            Log.w(TAG, "Incoming player unknown.");
+                        }
+                    }
 
                     // post this event via the Otto plugin so our components can update their views
                     ottoBus.post(move);

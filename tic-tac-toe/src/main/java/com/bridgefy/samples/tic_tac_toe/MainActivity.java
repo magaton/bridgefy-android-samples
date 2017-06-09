@@ -57,26 +57,19 @@ public class MainActivity extends AppCompatActivity {
         // load our username
         username = getSharedPreferences(Constants.PREFS_NAME, 0).getString(Constants.PREFS_USERNAME, null);
 
-
-
-        if (BridgefyListener.isThingsDevice(this))
-        {
+        if (BridgefyListener.isThingsDevice(this)) {
             //if this device is running Android Things, don't go through any UI interaction and
             //start right away
-
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             //enabling bluetooth automatically
             bluetoothAdapter.enable();
 
-            username= Build.MANUFACTURER + " "+Build.MODEL;
+            username = Build.MANUFACTURER + " " + Build.MODEL;
             // initialize the Bridgefy framework
             Bridgefy.initialize(getBaseContext(), registrationListener);
             setupList();
 
-        }
-
-        else
-        {
+        } else {
             // check that we have permissions, otherwise fire the IntroActivity
             if ((ContextCompat.checkSelfPermission(getApplicationContext(),
                     Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) ||
@@ -89,12 +82,9 @@ public class MainActivity extends AppCompatActivity {
                 setupList();
             }
         }
-
     }
 
-
-    private void setupList()
-    {
+    private void setupList() {
         // initialize the PlayersAdapter and the RecyclerView
         playersAdapter = new PlayersAdapter();
         playersRecyclerView.setAdapter(playersAdapter);
@@ -158,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "... Device Evaluation " + bridgefyClient.getDeviceProfile().getDeviceEvaluation());
 
             // initialize our EventListener
-            BridgefyListener.initialize(bridgefyClient.getUserUuid(), username);
+            BridgefyListener.initialize(getApplicationContext(), bridgefyClient.getUserUuid(), username);
 
             // register this activity as a Bus listener
             BridgefyListener.getOttoBus().register(MainActivity.this);
@@ -184,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      *      PLAYER ADAPTER CLASS
      */
-    private class PlayersAdapter extends RecyclerView.Adapter<PlayerViewHolder> {
+    public class PlayersAdapter extends RecyclerView.Adapter<PlayerViewHolder> {
 
         // the list that holds our incoming players and their match id fields
         ArrayList<MatchPlayerHolder> matchPlayers;
