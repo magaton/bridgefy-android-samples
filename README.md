@@ -32,7 +32,7 @@ This version is fine tuned for Bluetooth Low Energy (BLE) capable devices. While
 
 ## Initial Setup ##
 
-In order to include the Bridgefy SDK in your project, first add the following repository in your top-level gradle file:
+In order to include the Bridgefy SDK in your project, first add the following repository in your app's gradle file:
 
 
 
@@ -50,7 +50,7 @@ repositories {
 
 
 
-Then, add the dependency in your app's gradle file:
+Then, add the dependency:
 
 ```xml
 compile 'com.bridgefy:android-sdk:1.0.+'
