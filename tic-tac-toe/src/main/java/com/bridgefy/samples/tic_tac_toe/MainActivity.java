@@ -216,9 +216,9 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
                     // if nothing was found, add the Move as a new MatchPlayer entity
-                    Log.i(TAG, "Adding Move");
-                    matchPlayers.add(new MatchPlayerHolder(move));
-                    notifyItemInserted(matchPlayers.size() - 1);
+//                    Log.i(TAG, "Adding Move");
+//                    matchPlayers.add(new MatchPlayerHolder(move));
+//                    notifyItemInserted(matchPlayers.size() - 1);
                 }
             }
         }

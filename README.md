@@ -180,7 +180,7 @@ The MessageListener callback will inform you of new messages that you have recei
 
 @Override
     public void onBroadcastMessageReceived(Message message) {
-    // Broadcast messages don't have a Session object attached to them
+    // Public message sent to all nearby devices
     ...
 }
 ```
@@ -216,7 +216,7 @@ If you are using Proguard in your project, include the following lines to your c
 
 ## Supported Devices ##
 
-As of May 2017, the following devices have been tested with Bridgefy and offer the best performance:
+As of June 2017, the following devices have been tested with Bridgefy and offer the best performance:
 
 * Nexus 6P
 * Nexus 5X
@@ -228,6 +228,8 @@ As of May 2017, the following devices have been tested with Bridgefy and offer t
 * Moto G4
 * Moto G4 Plus
 * Moto E 2nd gen
+* OnePlus One
+* OnePlus 3T
 * Sony Xperia Z5
 * Sony Xperia Z5 Compact
 * Raspbery Pi 3 (Android Things)
