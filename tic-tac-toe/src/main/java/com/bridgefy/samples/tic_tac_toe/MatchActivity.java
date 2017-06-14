@@ -29,16 +29,18 @@ public class MatchActivity extends TicTacToeActivity {
 
     // a globaly available variable that identifies the current match
     public static String matchId;
+    private boolean publicMatch = false;
 
-    // a Participants object created
-    HashMap<Character, String> participants;
-    HashMap<Character, Integer> scores;
+    // a Participants object
+    HashMap<Character, Player> participants;
 
     // score board
     @BindView(R.id.xScore)
     TextView scoreX;
     @BindView(R.id.oScore)
     TextView scoreO;
+    @BindView(R.id.players)
+    TextView players;
 
     private int sequence = 0;
 
@@ -47,28 +49,47 @@ public class MatchActivity extends TicTacToeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get our player object and set a matchId
-        player = Player.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_PLAYER));
+        // Enable the Up button
+        ActionBar ab = getSupportActionBar();
+
+        // get our match parameters
+        String rivalString = getIntent().getStringExtra(Constants.INTENT_EXTRA_PLAYER);
+        Move move = Move.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_MOVE));
+
+        // personal match
+        if (rivalString != null) {
+            rival = Player.create(rivalString);
+            player = BridgefyListener.getPlayer();
+            if (ab != null)
+                ab.setTitle(rival.getNick());
+
+            // initialize scores
+            rival.setWins(0);
+            player.setWins(0);
+
+        // public match
+        } else {
+            rival  = move.getParticipants().get(X);
+            player = move.getParticipants().get(O);
+            publicMatch = true;
+
+            // update views
+            disableInputs();
+            tv_turn.setVisibility(View.GONE);
+            players.setVisibility(View.VISIBLE);
+            players.setText("X: " + rival.getNick() + "\n" + "O: " + player.getNick());
+            if (ab != null)
+                ab.setTitle(rival.getNick() + "vs. " + player.getNick());
+        }
 
         // create our participants object for the Move message
         participants = new HashMap<>();
-        participants.put(X, BridgefyListener.getUuid());
-        participants.put(O, player.getUuid());
-
-        // initialize the scores HashMap
-        scores = new HashMap<>();
-        scores.put(X, 0);
-        scores.put(O, 0);
+        participants.put(X, player);
+        participants.put(O, rival);
 
         // check if this Match was started with a corresponding matchId
-        Move move = Move.create(getIntent().getStringExtra(Constants.INTENT_EXTRA_MOVE));
         if (move != null)
             onMoveReceived(move);
-
-        // Enable the Up button
-        ActionBar ab = getSupportActionBar();
-        if (ab != null)
-            ab.setTitle(player.getNick());
 
         // register this activity on the Otto plugin (not a part of the Bridgefy framework)
         BridgefyListener.getOttoBus().register(this);
@@ -109,8 +130,8 @@ public class MatchActivity extends TicTacToeActivity {
     }
 
     private void endMatch() {
-        if (matchId != null) {
-            Bridgefy.sendMessage(Bridgefy.createMessage(player.getUuid(),
+        if (matchId != null && !publicMatch) {
+            Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(
                     new RefuseMatch(matchId, false).toHashMap()));
             MainActivity.dropMatch(matchId);
         }
@@ -122,7 +143,7 @@ public class MatchActivity extends TicTacToeActivity {
         // generate this game's match Id
         if (matchId == null) {
             matchId = generateMatchId();
-            Log.d(TAG, "Starting Match with: " + player.getNick());
+            Log.d(TAG, "Starting Match with: " + rival.getNick());
             Log.d(TAG, "            matchId: " + matchId);
         }
 
@@ -150,6 +171,7 @@ public class MatchActivity extends TicTacToeActivity {
 
     @Override
     void sendWinner() {
+        incrementWin(turn);
         updateScores();
         tv_turn.setText(getString(R.string.you_win));
 
@@ -205,7 +227,7 @@ public class MatchActivity extends TicTacToeActivity {
                 // get a reference to our matchId
                 if (matchId == null) {
                     matchId = move.getMatchId();
-                    Log.d(TAG, "Starting Match with: " + player.getNick());
+                    Log.d(TAG, "Starting Match with: " + rival.getNick());
                     Log.d(TAG, "            matchId: " + matchId);
                 } else {
                     Log.d(TAG, "Move received for matchId: " + move.getMatchId());
@@ -213,7 +235,7 @@ public class MatchActivity extends TicTacToeActivity {
                 }
 
                 // enable the controls again if they had stopped before
-                if (matchStopped) {
+                if (matchStopped && !publicMatch) {
                     initializeBoard();
                     matchStopped = false;
                 }
@@ -223,20 +245,21 @@ public class MatchActivity extends TicTacToeActivity {
                     if (move.getSequence() % 2 == 1) {
                         turn = O;
                         myTurnChar = O;
-                        participants.put(O, BridgefyListener.getUuid());
-                        participants.put(X, player.getUuid());
+                        participants.put(O, player);
+                        participants.put(X, rival);
                     }
-                    tv_turn.setText(String.format(getString(R.string.your_turn),
-                            String.valueOf(myTurnChar)));
+                    updateTurnView(publicMatch);
                 } else if (move.getWinner() == -1) {
                     stopMatch(!myTurn);
                     tv_turn.setText(getString(R.string.draw));
                 } else {
                     // update the scores
+                    participants.get(X).setWins(move.getParticipants().get(X).getWins());
+                    participants.get(O).setWins(move.getParticipants().get(O).getWins());
                     updateScores();
 
                     // update the turn text
-                    tv_turn.setText(String.format(getString(R.string.their_win), player.getNick()));
+                    tv_turn.setText(String.format(getString(R.string.their_win), rival.getNick()));
                     stopMatch(true);
                 }
 
@@ -254,6 +277,26 @@ public class MatchActivity extends TicTacToeActivity {
         }
     }
 
+    protected void stopMatch(boolean myTurn) {
+        matchStopped = true;
+
+        disableInputs();
+
+        // show the new match button if we can start the game again
+        if (myTurn && !publicMatch)
+            btnNewMatch.setVisibility(View.VISIBLE);
+    }
+
+    private void updateTurnView(boolean publicMatch) {
+        // TODO preservar información del turno
+//        if (publicMatch)
+//            tv_turn.setText(String.format(getString(R.string.their_turn),
+//                    participants.get(myTurnChar).getNick(), String.valueOf(flipChar(myTurnChar))));
+//        else
+            tv_turn.setText(String.format(getString(R.string.your_turn),
+                    String.valueOf(myTurnChar)));
+    }
+
     // answer automatically if the current device is an Android Things device
     @Subscribe
     public void respondMoveIfThingsDevice(String incomingMatchId) {
@@ -268,13 +311,14 @@ public class MatchActivity extends TicTacToeActivity {
         }
     }
 
+    private void incrementWin(char winner) {
+        int newScore = participants.get(winner).getWins() + 1;
+        participants.get(winner).setWins(newScore);
+    }
+
     private void updateScores() {
-        int newScore = scores.get(turn) + 1;
-        scores.put(turn, newScore);
-        if (turn == X)
-            scoreX.setText(String.valueOf(newScore));
-        else
-            scoreO.setText(String.valueOf(newScore));
+        scoreX.setText(String.valueOf(participants.get(X).getWins()));
+        scoreO.setText(String.valueOf(participants.get(O).getWins()));
     }
 
     @Subscribe
@@ -282,7 +326,7 @@ public class MatchActivity extends TicTacToeActivity {
         Log.d(TAG, "RefuseMatch received for matchId: " + refuseMatch.getMatchId());
         if (refuseMatch.getMatchId().equals(matchId)) {
             Toast.makeText(getBaseContext(),
-                                String.format(getString(R.string.match_rejected), player.getNick()),
+                                String.format(getString(R.string.match_rejected), rival.getNick()),
                                 Toast.LENGTH_LONG).show();
             MainActivity.dropMatch(matchId);
             finish();

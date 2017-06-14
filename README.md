@@ -129,13 +129,13 @@ At this point, the **StateListener** callback will let you know every time a suc
 ```java
 @Override
 public void onDeviceConnected(Device device) {
-// Do something with the found device
+    // Do something with the found device
     device.sendMessage(...);
 }
 
 @Override
 public void onDeviceLost(Device device) {
-// Let your implementation know that a device is no longer available
+    // Let your implementation know that a device is no longer available
     ...
 }
 ```

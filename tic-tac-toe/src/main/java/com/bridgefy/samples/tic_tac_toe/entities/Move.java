@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class Move {
 
     String mid;
-    HashMap<Character, String> participants;
+    HashMap<Character, Player> participants;
     int[][] board = new int[3][3];
     int seq;
     int winner;
@@ -47,8 +47,8 @@ public class Move {
      */
     public String getOtherUuid() {
         if (myMatch())
-            return BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.O)) ?
-                    participants.get(TicTacToeActivity.X) : participants.get(TicTacToeActivity.O);
+            return BridgefyListener.getPlayer().getUuid().equals(participants.get(TicTacToeActivity.O).getUuid()) ?
+                    participants.get(TicTacToeActivity.X).getUuid() : participants.get(TicTacToeActivity.O).getUuid();
         else
             return null;
     }
@@ -57,15 +57,15 @@ public class Move {
      * @return True if this Move belongs to a Match that belongs to the current user
      */
     public boolean myMatch() {
-        return (BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.O)) ||
-                BridgefyListener.getUuid().equals(participants.get(TicTacToeActivity.X)));
+        return (BridgefyListener.getPlayer().getUuid().equals(participants.get(TicTacToeActivity.O).getUuid()) ||
+                BridgefyListener.getPlayer().getUuid().equals(participants.get(TicTacToeActivity.X).getUuid()));
     }
 
-    public void setParticipants(HashMap<Character, String> participants) {
+    public void setParticipants(HashMap<Character, Player> participants) {
         this.participants = participants;
     }
 
-    public HashMap<Character, String> getParticipants() {
+    public HashMap<Character, Player> getParticipants() {
         return participants;
     }
 

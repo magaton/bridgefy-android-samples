@@ -33,8 +33,7 @@ public class BridgefyListener {
     private Bus ottoBus;
     private Context context;
 
-    private String username;
-    private String uuid;
+    private Player mPlayer;
 
 
     private BridgefyListener(Context context, Bus ottoBus) {
@@ -44,8 +43,7 @@ public class BridgefyListener {
 
     static void initialize(Context context, String uuid, String username) {
         instance = new BridgefyListener(context, new Bus());
-        instance.setUuid(uuid);
-        instance.setUsername(username);
+        instance.setmPlayer(new Player(uuid, username));
     }
 
     static void release() {
@@ -60,7 +58,7 @@ public class BridgefyListener {
         @Override
         public void onDeviceConnected(Device device, Session session) {
             // send a handshake to nearby devices
-            device.sendMessage(new Player(uuid, username).toHashMap());
+            device.sendMessage(mPlayer.toHashMap());
         }
 
         @Override
@@ -95,18 +93,6 @@ public class BridgefyListener {
                     // recreate the Player object from the incoming message
                     // post the found object to our activities via the Otto plugin
                     ottoBus.post(Player.create(message));
-                    break;
-
-                case REFUSE_MATCH:
-                    // recreate the RefuseMatch object from the incoming message
-                    // post the found object to our activities via the Otto plugin
-                    ottoBus.post(RefuseMatch.create(message));
-
-                    // let iPhone devices know we're available (not required on Android)
-                    Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(
-                            new Event<>(
-                                    Event.EventType.AVAILABLE,
-                                    this).toHashMap()));
                     break;
             }
         }
@@ -159,6 +145,18 @@ public class BridgefyListener {
 
                     // answer automatically if the current device is an Android Things device
                     ottoBus.post(move.getMatchId());
+                    break;
+
+                case REFUSE_MATCH:
+                    // recreate the RefuseMatch object from the incoming message
+                    // post the found object to our activities via the Otto plugin
+                    ottoBus.post(RefuseMatch.create(message));
+
+                    // let iPhone devices know we're available (not required on Android)
+                    Bridgefy.sendBroadcastMessage(Bridgefy.createMessage(
+                            new Event<>(
+                                    Event.EventType.AVAILABLE,
+                                    this).toHashMap()));
                     break;
 
                 case AVAILABLE:
@@ -218,19 +216,11 @@ public class BridgefyListener {
         return instance.messageListener;
     }
 
-    public static String getUuid() {
-        return instance.uuid;
+    public static Player getPlayer() {
+        return instance.mPlayer;
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    void setmPlayer(Player mPlayer) {
+        this.mPlayer = mPlayer;
     }
 }

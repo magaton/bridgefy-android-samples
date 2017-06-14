@@ -216,9 +216,9 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
                     // if nothing was found, add the Move as a new MatchPlayer entity
-//                    Log.i(TAG, "Adding Move");
-//                    matchPlayers.add(new MatchPlayerHolder(move));
-//                    notifyItemInserted(matchPlayers.size() - 1);
+                    Log.i(TAG, "Adding Move from third party.");
+                    matchPlayers.add(new MatchPlayerHolder(move));
+                    notifyItemInserted(matchPlayers.size() - 1);
                 }
             }
         }
@@ -299,18 +299,19 @@ public class MainActivity extends AppCompatActivity {
 
             // but a MPH object with just a Move child means we're watching someone else play
             } else if (mph.getMove() != null) {
-//                playerView.setText(
-//                        mph.getMove().getParticipants().get(TicTacToeActivity.O) + " vs. " +
-//                        mph.getMove().getParticipants().get(TicTacToeActivity.X));
+                playerView.setText(
+                        mph.getMove().getParticipants().get(TicTacToeActivity.O).getNick() + " vs. " +
+                        mph.getMove().getParticipants().get(TicTacToeActivity.X).getNick());
             }
         }
 
         @Override
         public void onClick(View v) {
-            startActivity(
-                    new Intent(getBaseContext(), MatchActivity.class)
-                            .putExtra(Constants.INTENT_EXTRA_PLAYER, matchPlayerHolder.getPlayer().toString())
-                            .putExtra(Constants.INTENT_EXTRA_MOVE,  matchPlayerHolder.getMoveString()));
+            Intent intent = new Intent(getBaseContext(), MatchActivity.class)
+                    .putExtra(Constants.INTENT_EXTRA_MOVE, matchPlayerHolder.getMoveString());
+            if (matchPlayerHolder.getPlayer() != null)
+                intent.putExtra(Constants.INTENT_EXTRA_PLAYER, matchPlayerHolder.getPlayer().toString());
+            startActivity(intent);
         }
     }
 }
