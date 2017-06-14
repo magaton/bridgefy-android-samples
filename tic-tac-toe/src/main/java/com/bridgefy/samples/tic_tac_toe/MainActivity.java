@@ -243,7 +243,8 @@ public class MainActivity extends AppCompatActivity {
 
         void removePlayer(String playerId) {
             for (int i = 0; i < matchPlayers.size(); i++) {
-                if (matchPlayers.get(i).getPlayer().getUuid().equals(playerId)) {
+                if (matchPlayers.get(i).getPlayer() != null &&
+                        matchPlayers.get(i).getPlayer().getUuid().equals(playerId)) {
                     matchPlayers.remove(i);
                     notifyItemRemoved(i);
                 }
