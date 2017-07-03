@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Remote Control</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="send_image">Send Image</string>
+    <string name="change_color">Change Color</string>
+    <string name="turn_on_flash">Turn On Flash</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="pick_image">Select an Image</string>
+    <string name="send_text">Send Text</string>
+</resources>
