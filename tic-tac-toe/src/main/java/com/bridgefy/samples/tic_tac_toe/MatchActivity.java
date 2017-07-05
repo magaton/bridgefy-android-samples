@@ -170,6 +170,7 @@ public class MatchActivity extends TicTacToeActivity {
     }
 
     @Override
+    // TODO actualizar textview indicando al ganador cuando acabe una partida como espectador
     void sendWinner() {
         incrementWin(turn);
         updateScores();
@@ -328,7 +329,6 @@ public class MatchActivity extends TicTacToeActivity {
             Toast.makeText(getBaseContext(),
                                 String.format(getString(R.string.match_rejected), rival.getNick()),
                                 Toast.LENGTH_LONG).show();
-            MainActivity.dropMatch(matchId);
             finish();
         }
     }

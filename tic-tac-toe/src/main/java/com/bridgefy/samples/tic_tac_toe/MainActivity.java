@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.bridgefy.samples.tic_tac_toe.entities.MatchPlayerHolder;
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
+import com.bridgefy.samples.tic_tac_toe.entities.RefuseMatch;
 import com.bridgefy.sdk.client.Bridgefy;
 import com.bridgefy.sdk.client.BridgefyClient;
 import com.bridgefy.sdk.client.Device;
@@ -130,6 +131,12 @@ public class MainActivity extends AppCompatActivity {
     public static void onMoveReceived(Move move) {
         // Add the Move to our corresponding match
         playersAdapter.addMove(move);
+    }
+
+    @Subscribe
+    public void onMatchRefused(RefuseMatch refuseMatch) {
+        // drop the match we just received
+        playersAdapter.dropMatch(refuseMatch.getMatchId());
     }
 
     public static void dropMatch(String matchId) {
