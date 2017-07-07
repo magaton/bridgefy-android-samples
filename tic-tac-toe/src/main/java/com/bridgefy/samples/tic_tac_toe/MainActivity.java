@@ -262,8 +262,14 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < matchPlayers.size(); i++) {
                 if (matchPlayers.get(i).getMove() != null &&
                         matchPlayers.get(i).getMove().getMatchId().equals(matchId)) {
-                    matchPlayers.get(i).setMove(null);
-                    notifyItemChanged(i);
+
+                    if (matchPlayers.get(i).getPlayer() != null) {
+                        matchPlayers.get(i).setMove(null);
+                        notifyItemChanged(i);
+                    } else {
+                        matchPlayers.remove(i);
+                        notifyItemRemoved(i);
+                    }
                 }
             }
         }
