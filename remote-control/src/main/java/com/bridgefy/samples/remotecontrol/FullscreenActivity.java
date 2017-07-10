@@ -51,6 +51,8 @@ public class FullscreenActivity extends AppCompatActivity {
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
+
+
     private static final boolean AUTO_HIDE = true;
 
     /**
@@ -63,11 +65,16 @@ public class FullscreenActivity extends AppCompatActivity {
     private static final String COMMAND_LABEL = "command";
     private static final String COLOR_LABEL = "color";
     private static final String IMAGE_LABEL = "image";
+    private static final String ID_LABEL = "id";
     private static final int COMMAND_TEXT = 0x4;
     private static final int COMMAND_FLASH = 0X3;
     private static final int COMMAND_COLOR = 0X2;
     private static final int COMMAND_IMAGE = 0X1;
+    private static final String ID_KEY = "current_id";
     private Unbinder unbinder;
+
+    int currentId=0;
+
 
 
     @Override
@@ -98,6 +105,7 @@ public class FullscreenActivity extends AppCompatActivity {
     TextView textView;
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
+    private final Handler flashHandler=new Handler();
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -141,44 +149,45 @@ public class FullscreenActivity extends AppCompatActivity {
         public void onBroadcastMessageReceived(Message message) {
             super.onBroadcastMessageReceived(message);
 
-            textView.setVisibility(View.GONE);
-
-
             HashMap content = message.getContent();
-            switch ((Integer)content.get(COMMAND_LABEL))
-            {
-                case COMMAND_FLASH:
-                    switchFlash();
-                    break;
 
-                case COMMAND_COLOR:
-                    switchColor((Integer) content.get(COLOR_LABEL));
-                    break;
-                case COMMAND_IMAGE:
-                    switch ((Integer) content.get(IMAGE_LABEL))
-                    {
-                        case 0:
-                            mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_1));
-                            break;
-                        case 1:
-                            mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_2));
-                            break;
-                        case 2:
-                            mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_3));
-                            break;
-                    }
-                    break;
+            if ((Integer) content.get(ID_LABEL) > currentId) {
+                textView.setVisibility(View.GONE);
 
-                case COMMAND_TEXT:
 
-                    mContentView.setBackgroundColor(Color.parseColor("#0099cc"));
-                    String text = (String) content.get(TEXT_LABEL);
-                    textView.setText(text);
-                    textView.setVisibility(View.VISIBLE);
+                switch ((Integer) content.get(COMMAND_LABEL)) {
+                    case COMMAND_FLASH:
+                        switchFlash();
+                        break;
 
+                    case COMMAND_COLOR:
+                        switchColor((Integer) content.get(COLOR_LABEL));
+                        break;
+                    case COMMAND_IMAGE:
+                        switch ((Integer) content.get(IMAGE_LABEL)) {
+                            case 0:
+                                mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_1));
+                                break;
+                            case 1:
+                                mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_2));
+                                break;
+                            case 2:
+                                mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_3));
+                                break;
+                        }
+                        break;
+
+                    case COMMAND_TEXT:
+
+                        mContentView.setBackgroundColor(Color.parseColor("#0099cc"));
+                        String text = (String) content.get(TEXT_LABEL);
+                        textView.setText(text);
+                        textView.setVisibility(View.VISIBLE);
+
+
+                }
 
             }
-
         }
     };
 
@@ -207,6 +216,9 @@ public class FullscreenActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_fullscreen);
 
+        if (savedInstanceState!=null) {
+            currentId = savedInstanceState.getInt(ID_KEY);
+        }
         mVisible = true;
 
         unbinder = ButterKnife.bind(this);
@@ -268,6 +280,9 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
 
+
+
+
     @OnLongClick(R.id.content)
     public boolean onClick(View view) {
 
@@ -294,7 +309,12 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
+        outState.putInt(ID_KEY,currentId);
+    }
 
     private void switchColor(int color) {
 
@@ -312,6 +332,27 @@ public class FullscreenActivity extends AppCompatActivity {
                 {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
+
+
+                        if (!torchEnabled)
+                        {
+
+                            flashHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        try {
+                                            manager.setTorchMode(cameraId,false);
+                                        } catch (CameraAccessException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                }
+                            }, 15000);
+
+                        }
                         manager.setTorchMode(cameraId,!torchEnabled);
                     }
                 }
@@ -335,6 +376,8 @@ public class FullscreenActivity extends AppCompatActivity {
                 switchFlash();
                 HashMap<String, Object> myData=new HashMap<>();
                 myData.put(COMMAND_LABEL,COMMAND_FLASH);
+                currentId=+1;
+                myData.put(ID_LABEL,currentId);
                 Message message=Bridgefy.createMessage(myData);
                 Bridgefy.sendBroadcastMessage(message);
 
@@ -362,8 +405,11 @@ public class FullscreenActivity extends AppCompatActivity {
                         HashMap<String, Object> myData=new HashMap<>();
                         myData.put(COMMAND_LABEL,COMMAND_COLOR);
                         myData.put(COLOR_LABEL,color);
+                        currentId=+1;
+                        myData.put(ID_LABEL,currentId);
                         Message message=Bridgefy.createMessage(myData);
                         Bridgefy.sendBroadcastMessage(message);
+
 
                     }
                 });
@@ -400,8 +446,12 @@ public class FullscreenActivity extends AppCompatActivity {
                                         break;
                                 }
 
+                                currentId=+1;
+                                myData.put(ID_LABEL,currentId);
                                 Message message=Bridgefy.createMessage(myData);
+
                                 Bridgefy.sendBroadcastMessage(message);
+
 
                             }
                         });
@@ -428,6 +478,8 @@ public class FullscreenActivity extends AppCompatActivity {
                         HashMap<String, Object> myData=new HashMap<>();
                         myData.put(COMMAND_LABEL,COMMAND_TEXT);
                         myData.put(TEXT_LABEL,text);
+                        currentId=+1;
+                        myData.put(ID_LABEL,currentId);
                         Message message=Bridgefy.createMessage(myData);
                         Bridgefy.sendBroadcastMessage(message);
                         textView.setVisibility(View.VISIBLE);
