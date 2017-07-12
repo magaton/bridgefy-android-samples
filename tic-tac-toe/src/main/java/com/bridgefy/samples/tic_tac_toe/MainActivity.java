@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.bridgefy.samples.tic_tac_toe.entities.MatchPlayerHolder;
 import com.bridgefy.samples.tic_tac_toe.entities.Move;
 import com.bridgefy.samples.tic_tac_toe.entities.Player;
+import com.bridgefy.samples.tic_tac_toe.entities.RefuseMatch;
 import com.bridgefy.sdk.client.Bridgefy;
 import com.bridgefy.sdk.client.BridgefyClient;
 import com.bridgefy.sdk.client.Device;
@@ -132,6 +133,12 @@ public class MainActivity extends AppCompatActivity {
         playersAdapter.addMove(move);
     }
 
+    @Subscribe
+    public void onMatchRefused(RefuseMatch refuseMatch) {
+        // drop the match we just received
+        playersAdapter.dropMatch(refuseMatch.getMatchId());
+    }
+
     public static void dropMatch(String matchId) {
         playersAdapter.dropMatch(matchId);
     }
@@ -216,9 +223,9 @@ public class MainActivity extends AppCompatActivity {
 
                 } else {
                     // if nothing was found, add the Move as a new MatchPlayer entity
-//                    Log.i(TAG, "Adding Move");
-//                    matchPlayers.add(new MatchPlayerHolder(move));
-//                    notifyItemInserted(matchPlayers.size() - 1);
+                    Log.i(TAG, "Adding Move from third party.");
+                    matchPlayers.add(new MatchPlayerHolder(move));
+                    notifyItemInserted(matchPlayers.size() - 1);
                 }
             }
         }
@@ -243,7 +250,8 @@ public class MainActivity extends AppCompatActivity {
 
         void removePlayer(String playerId) {
             for (int i = 0; i < matchPlayers.size(); i++) {
-                if (matchPlayers.get(i).getPlayer().getUuid().equals(playerId)) {
+                if (matchPlayers.get(i).getPlayer() != null &&
+                        matchPlayers.get(i).getPlayer().getUuid().equals(playerId)) {
                     matchPlayers.remove(i);
                     notifyItemRemoved(i);
                 }
@@ -254,8 +262,14 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < matchPlayers.size(); i++) {
                 if (matchPlayers.get(i).getMove() != null &&
                         matchPlayers.get(i).getMove().getMatchId().equals(matchId)) {
-                    matchPlayers.get(i).setMove(null);
-                    notifyItemChanged(i);
+
+                    if (matchPlayers.get(i).getPlayer() != null) {
+                        matchPlayers.get(i).setMove(null);
+                        notifyItemChanged(i);
+                    } else {
+                        matchPlayers.remove(i);
+                        notifyItemRemoved(i);
+                    }
                 }
             }
         }
@@ -299,18 +313,19 @@ public class MainActivity extends AppCompatActivity {
 
             // but a MPH object with just a Move child means we're watching someone else play
             } else if (mph.getMove() != null) {
-//                playerView.setText(
-//                        mph.getMove().getParticipants().get(TicTacToeActivity.O) + " vs. " +
-//                        mph.getMove().getParticipants().get(TicTacToeActivity.X));
+                playerView.setText(
+                        mph.getMove().getParticipants().get(TicTacToeActivity.O).getNick() + " vs. " +
+                        mph.getMove().getParticipants().get(TicTacToeActivity.X).getNick());
             }
         }
 
         @Override
         public void onClick(View v) {
-            startActivity(
-                    new Intent(getBaseContext(), MatchActivity.class)
-                            .putExtra(Constants.INTENT_EXTRA_PLAYER, matchPlayerHolder.getPlayer().toString())
-                            .putExtra(Constants.INTENT_EXTRA_MOVE,  matchPlayerHolder.getMoveString()));
+            Intent intent = new Intent(getBaseContext(), MatchActivity.class)
+                    .putExtra(Constants.INTENT_EXTRA_MOVE, matchPlayerHolder.getMoveString());
+            if (matchPlayerHolder.getPlayer() != null)
+                intent.putExtra(Constants.INTENT_EXTRA_PLAYER, matchPlayerHolder.getPlayer().toString());
+            startActivity(intent);
         }
     }
 }

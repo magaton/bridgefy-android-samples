@@ -42,6 +42,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
     Button btnNewMatch;
 
     // a Player object representing our rival
+    protected Player rival;
     protected Player player;
 
 
@@ -61,6 +62,8 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
 
     abstract void sendDraw(int[][] board);
 
+    abstract void stopMatch(boolean myTurn);
+
 
     protected void initializeTurn() {
         turn = X;
@@ -79,7 +82,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                     String.valueOf(myTurnChar)));
         } else {
             tv_turn.setText(String.format(getString(R.string.their_turn),
-                    player.getNick(), String.valueOf(flipChar(myTurnChar))));
+                    rival.getNick(), String.valueOf(flipChar(myTurnChar))));
         }
 
         resetBoard(null);
@@ -94,7 +97,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         }
     }
 
-    private char flipChar(char c) {
+    protected char flipChar(char c) {
         return c == X ? O : X;
     }
 
@@ -119,7 +122,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                         if (gameStatus() == 0) {
                             turn = flipChar(turn);
                             tv_turn.setText(String.format(getString(R.string.their_turn),
-                                    player.getNick(), String.valueOf(flipChar(myTurnChar))));
+                                    rival.getNick(), String.valueOf(flipChar(myTurnChar))));
                             sendMove(board);
                         } else if (gameStatus() == -1) {
                             tv_turn.setText(getString(R.string.draw));
@@ -143,9 +146,7 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
         return !(board[r][c] == 0);
     }
 
-    protected void stopMatch(boolean myTurn) {
-        matchStopped = true;
-
+    protected void disableInputs() {
         // disable play inputs
         for (int i = 0; i < mainBoard.getChildCount(); i++) {
             TableRow row = (TableRow) mainBoard.getChildAt(i);
@@ -155,10 +156,6 @@ public abstract class TicTacToeActivity extends AppCompatActivity {
                 tv.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.gray));
             }
         }
-
-        // show the new match button if we can start the game again
-        if (myTurn)
-            btnNewMatch.setVisibility(View.VISIBLE);
     }
 
     protected void resetBoard(int[][] board) {

@@ -17,6 +17,7 @@ public class Player {
     private String nick;
     private String uuid;
     private int    status = STATUS_FREE;
+    private int    wins;
 
 
     public Player(String uuid, String nick) {
@@ -56,6 +57,13 @@ public class Player {
         this.uuid = uuid;
     }
 
+    public int getWins() {
+        return wins;
+    }
+
+    public void setWins(int wins) {
+        this.wins = wins;
+    }
 
     @Override
     public String toString() {
