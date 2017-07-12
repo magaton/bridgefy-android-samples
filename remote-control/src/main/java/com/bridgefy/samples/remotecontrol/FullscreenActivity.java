@@ -175,16 +175,16 @@ public class FullscreenActivity extends AppCompatActivity {
                     case COMMAND_IMAGE:
                         switch ((Integer) content.get(IMAGE_LABEL)) {
                             case 0:
-                                mContentView.setBackground(getDrawable(R.drawable.marca_rc));
+                                mContentView.setBackground(getDrawable(R.drawable.marca));
                                 break;
                             case 1:
-                                mContentView.setBackground(getDrawable(R.drawable.deportes_rc));
+                                mContentView.setBackground(getDrawable(R.drawable.deportes));
                                 break;
                             case 2:
-                                mContentView.setBackground(getDrawable(R.drawable.mapa_RC));
+                                mContentView.setBackground(getDrawable(R.drawable.mapa));
                                 break;
                             case 3:
-                                mContentView.setBackground(getDrawable(R.drawable.concierto_rc));
+                                mContentView.setBackground(getDrawable(R.drawable.concierto));
                                 break;
                         }
                         break;
@@ -440,19 +440,19 @@ public class FullscreenActivity extends AppCompatActivity {
                                 switch (which)
                                 {
                                     case 0:
-                                        mContentView.setBackground(getDrawable(R.drawable.marca_rc));
+                                        mContentView.setBackground(getDrawable(R.drawable.marca));
                                         myData.put(IMAGE_LABEL,0);
                                         break;
                                     case 1:
-                                        mContentView.setBackground(getDrawable(R.drawable.deportes_rc));
+                                        mContentView.setBackground(getDrawable(R.drawable.deportes));
                                         myData.put(IMAGE_LABEL,1);
                                         break;
                                     case 2:
-                                        mContentView.setBackground(getDrawable(R.drawable.mapa_RC));
+                                        mContentView.setBackground(getDrawable(R.drawable.mapa));
                                         myData.put(IMAGE_LABEL,2);
                                         break;
                                     case 3:
-                                        mContentView.setBackground(getDrawable(R.drawable.concierto_rc));
+                                        mContentView.setBackground(getDrawable(R.drawable.concierto));
                                         myData.put(IMAGE_LABEL,3);
                                         break;
                                 }
