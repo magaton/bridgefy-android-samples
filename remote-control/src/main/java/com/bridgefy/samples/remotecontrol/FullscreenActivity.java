@@ -33,6 +33,7 @@ import com.bridgefy.sdk.client.StateListener;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 import com.pes.androidmaterialcolorpickerdialog.ColorPickerCallback;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 
 import butterknife.BindView;
@@ -73,7 +74,6 @@ public class FullscreenActivity extends AppCompatActivity {
     private static final String ID_KEY = "current_id";
     private Unbinder unbinder;
 
-    int currentId=0;
 
 
 
@@ -144,6 +144,7 @@ public class FullscreenActivity extends AppCompatActivity {
     };
     private CameraManager manager;
     private boolean torchEnabled;
+    private Double latestTime=new Double(0);
     private MessageListener messageListener=new MessageListener() {
         @Override
         public void onBroadcastMessageReceived(Message message) {
@@ -151,7 +152,9 @@ public class FullscreenActivity extends AppCompatActivity {
 
             HashMap content = message.getContent();
 
-            if ((Integer) content.get(ID_LABEL) > currentId) {
+            Double aDouble = (Double) content.get(ID_LABEL);
+            if ( aDouble>latestTime ) {
+                latestTime=aDouble;
                 textView.setVisibility(View.GONE);
 
 
@@ -161,7 +164,13 @@ public class FullscreenActivity extends AppCompatActivity {
                         break;
 
                     case COMMAND_COLOR:
-                        switchColor((Integer) content.get(COLOR_LABEL));
+                        try {
+                            switchColor(BigInteger.valueOf((Integer) content.get(COLOR_LABEL)));
+                        }
+                        catch(ClassCastException cla)
+                        {
+                            switchColor((BigInteger)content.get(COLOR_LABEL));
+                        }
                         break;
                     case COMMAND_IMAGE:
                         switch ((Integer) content.get(IMAGE_LABEL)) {
@@ -216,9 +225,6 @@ public class FullscreenActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_fullscreen);
 
-        if (savedInstanceState!=null) {
-            currentId = savedInstanceState.getInt(ID_KEY);
-        }
         mVisible = true;
 
         unbinder = ButterKnife.bind(this);
@@ -309,11 +315,10 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    private void switchColor(BigInteger color) {
 
-        outState.putInt(ID_KEY,currentId);
+        mContentView.setBackgroundColor(color.intValue());
+
     }
 
     private void switchColor(int color) {
@@ -376,8 +381,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 switchFlash();
                 HashMap<String, Object> myData=new HashMap<>();
                 myData.put(COMMAND_LABEL,COMMAND_FLASH);
-                currentId=+1;
-                myData.put(ID_LABEL,currentId);
+                myData.put(ID_LABEL,Double.parseDouble("" + System.currentTimeMillis()));
                 Message message=Bridgefy.createMessage(myData);
                 Bridgefy.sendBroadcastMessage(message);
 
@@ -404,9 +408,9 @@ public class FullscreenActivity extends AppCompatActivity {
                         switchColor (color);
                         HashMap<String, Object> myData=new HashMap<>();
                         myData.put(COMMAND_LABEL,COMMAND_COLOR);
-                        myData.put(COLOR_LABEL,color);
-                        currentId=+1;
-                        myData.put(ID_LABEL,currentId);
+                        myData.put(COLOR_LABEL, BigInteger.valueOf(color));
+                        double v = Double.parseDouble("" + System.currentTimeMillis());
+                        myData.put(ID_LABEL,v);
                         Message message=Bridgefy.createMessage(myData);
                         Bridgefy.sendBroadcastMessage(message);
 
@@ -446,8 +450,7 @@ public class FullscreenActivity extends AppCompatActivity {
                                         break;
                                 }
 
-                                currentId=+1;
-                                myData.put(ID_LABEL,currentId);
+                                myData.put(ID_LABEL,Double.parseDouble("" + System.currentTimeMillis()));
                                 Message message=Bridgefy.createMessage(myData);
 
                                 Bridgefy.sendBroadcastMessage(message);
@@ -478,8 +481,7 @@ public class FullscreenActivity extends AppCompatActivity {
                         HashMap<String, Object> myData=new HashMap<>();
                         myData.put(COMMAND_LABEL,COMMAND_TEXT);
                         myData.put(TEXT_LABEL,text);
-                        currentId=+1;
-                        myData.put(ID_LABEL,currentId);
+                        myData.put(ID_LABEL,Double.parseDouble("" + System.currentTimeMillis()));
                         Message message=Bridgefy.createMessage(myData);
                         Bridgefy.sendBroadcastMessage(message);
                         textView.setVisibility(View.VISIBLE);
