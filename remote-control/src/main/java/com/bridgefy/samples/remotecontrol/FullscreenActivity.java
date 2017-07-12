@@ -175,13 +175,16 @@ public class FullscreenActivity extends AppCompatActivity {
                     case COMMAND_IMAGE:
                         switch ((Integer) content.get(IMAGE_LABEL)) {
                             case 0:
-                                mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_1));
+                                mContentView.setBackground(getDrawable(R.drawable.marca_rc));
                                 break;
                             case 1:
-                                mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_2));
+                                mContentView.setBackground(getDrawable(R.drawable.deportes_rc));
                                 break;
                             case 2:
-                                mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_3));
+                                mContentView.setBackground(getDrawable(R.drawable.mapa_RC));
+                                break;
+                            case 3:
+                                mContentView.setBackground(getDrawable(R.drawable.concierto_rc));
                                 break;
                         }
                         break;
@@ -437,16 +440,20 @@ public class FullscreenActivity extends AppCompatActivity {
                                 switch (which)
                                 {
                                     case 0:
-                                        mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_1));
+                                        mContentView.setBackground(getDrawable(R.drawable.marca_rc));
                                         myData.put(IMAGE_LABEL,0);
                                         break;
                                     case 1:
-                                        mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_2));
+                                        mContentView.setBackground(getDrawable(R.drawable.deportes_rc));
                                         myData.put(IMAGE_LABEL,1);
                                         break;
                                     case 2:
-                                        mContentView.setBackground(getDrawable(R.drawable.lorem_ipsum_3));
+                                        mContentView.setBackground(getDrawable(R.drawable.mapa_RC));
                                         myData.put(IMAGE_LABEL,2);
+                                        break;
+                                    case 3:
+                                        mContentView.setBackground(getDrawable(R.drawable.concierto_rc));
+                                        myData.put(IMAGE_LABEL,3);
                                         break;
                                 }
 
